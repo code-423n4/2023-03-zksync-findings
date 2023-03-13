@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "dontonka",
+  "risk": "3",
+  "title": "User can withdraw from L2 to L1 with an address(0)",
+  "issueId": 16,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/16"
+}
