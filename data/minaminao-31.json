@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "minaminao",
+  "risk": "2",
+  "title": "A malicious operator can set `newTimestamp = currentBlockTimestamp`",
+  "issueId": 31,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/31"
+}
