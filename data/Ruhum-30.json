@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "Ruhum",
+  "risk": "3",
+  "title": "Signature of the tx sent to `DefaultAccount.executeTransactionFromOutside()` is not validated",
+  "issueId": 30,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/30"
+}
