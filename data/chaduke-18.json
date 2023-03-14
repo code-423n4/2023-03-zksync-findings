@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "chaduke",
+  "risk": "3",
+  "title": "extractNumberFromMeta() extracts the wrong part of the number from Meta",
+  "issueId": 18,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/18"
+}
