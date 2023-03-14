@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "chaduke",
+  "risk": "2",
+  "title": "precompileCall() uses dirty _gasToBurn before it is cleaned.",
+  "issueId": 28,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/28"
+}
