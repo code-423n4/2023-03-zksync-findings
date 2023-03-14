@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "rvierdiiev",
+  "risk": "2",
+  "title": "MsgValueSimulator.fallback should revert when value > MAX_MSG_VALUE, but it will succeed",
+  "issueId": 23,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/23"
+}
