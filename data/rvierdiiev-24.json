@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "rvierdiiev",
+  "risk": "2",
+  "title": "Zksync blocks can have same block.timestamp which can be bad for some protocols that think that block can not have same timestamp",
+  "issueId": 24,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/24"
+}
