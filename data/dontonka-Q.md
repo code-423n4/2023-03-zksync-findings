@@ -1,4 +1,20 @@
 ```diff
+diff --git a/contracts/L1Messenger.sol b/contracts/L1Messenger.sol
+index cab7a10..2ae454b 100644
+--- a/contracts/L1Messenger.sol
++++ b/contracts/L1Messenger.sol
+@@ -39,7 +39,7 @@ contract L1Messenger is IL1Messenger {
+         uint256 gasToPay = pubdataLen * gasPerPubdataBytes;
+
+         // Call precompile to burn gas to cover the cost of publishing pubdata to L1.
+-        uint256 precompileParams = SystemContractHelper.packPrecompileParams(0, 0, 0, 0, 0);
++        uint256 precompileParams = SystemContractHelper.packPrecompileParams(0, 0, 0, 0, 0); //@audit (QA) this is not necessary as only for burning gas, should use the same patterns as KnownCodesStorage.sol#L109
+         bool precompileCallSuccess = SystemContractHelper.precompileCall(
+             precompileParams,
+             Utils.safeCastToU32(gasToPay)
+```
+
+```diff
 diff --git a/contracts/L2EthToken.sol b/contracts/L2EthToken.sol
 index d01f5b6..7026eb3 100644
 --- a/contracts/L2EthToken.sol
