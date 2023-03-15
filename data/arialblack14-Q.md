@@ -10,9 +10,8 @@
 | [L-1](#L1) | `require()` should be used instead of `assert()`                                                                            |     2     |
 | [L-2](#L2) | Avoid variable names that can shade                                                                                         |     1     |
 | [L-3](#L3) | Lock pragmas to specific compiler version.                                                                                  |    39    |
-| [L-4](#L4) | `abi.encodePacked()` should not be used with dynamic types when passing the result to a hash function such as `keccak256()` |     4     |
 
-*Total: 4 issues.*
+*Total: 3 issues.*
 
 ### Summary of non-critical issues
 
@@ -20,7 +19,7 @@
 | Number       | Issue details                                                                                         | Instances |
 | -------------- | ------------------------------------------------------------------------------------------------------- | :---------: |
 | [NC-1](#NC1) | Lines are too long.                                                                                   |     3     |
-| [NC-2](#NC2) | Value of`CURRENT_MAX_PRECOMPILE_ADDRESS` should be updated automatically with every precompile added. |     -     |
+| [NC-2](#NC2) | Value of `CURRENT_MAX_PRECOMPILE_ADDRESS` should be updated automatically with every precompile added. |     -     |
 | [NC-3](#NC3) | `2**<n> - 1` should be re-written as `type(uint<n>).max`                                              |     1     |
 | [NC-4](#NC4) | Use of`bytes.concat()` instead of `abi.encodePacked()`.                                               |     3     |
 | [NC-5](#NC5) | Return values of`approve()` not checked                                                               |     3     |
@@ -318,27 +317,6 @@ File: [2023-03-zksync/contracts/openzeppelin/utils/Address.sol](https://github.c
 
 ```solidity
 4: pragma solidity ^0.8.1;
-```
-
-### <a id=L4>[L-4]</a> `abi.encodePacked()` should not be used with dynamic types when passing the result to a hash function such as `keccak256()`
-
-##### Description
-
-Use `abi.encode()` instead which will pad items to 32 bytes, which will prevent hash collisions (e.g. `abi.encodePacked(0x123,0x456) => 0x123456 => abi.encodePacked(0x1,0x23456)`, but `abi.encode(0x123,0x456) => 0x0...1230...456)`. Unless there is a compelling reason, `abi.encode` should be preferred.
-
-##### Recommendation
-
-If there is only one argument to `abi.encodePacked()` it can often be cast to `bytes()` or `bytes32()` instead.
-
-##### *Instances (2):*
-
-File: [2023-03-zksync/contracts/libraries/TransactionHelper.sol](https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/libraries/TransactionHelper.sol#L118 )
-
-```solidity
-118: bytes32 structHash = keccak256(
-132: keccak256(abi.encodePacked(_transaction.factoryDeps)),
-137: bytes32 domainSeparator = keccak256(
-141: return keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
 ```
 
 ### Non-critical Issues
