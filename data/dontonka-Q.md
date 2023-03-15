@@ -31,3 +31,19 @@ index d01f5b6..7026eb3 100644
              totalSupply -= amount;
          }
 ```
+
+```diff
+diff --git a/contracts/ContractDeployer.sol b/contracts/ContractDeployer.sol
+index 3a85a9d..a69c7b7 100644
+--- a/contracts/ContractDeployer.sol
++++ b/contracts/ContractDeployer.sol
+@@ -314,7 +314,7 @@ contract ContractDeployer is IContractDeployer, ISystemContract {
+     function _constructContract(address _sender, address _newAddress, bytes calldata _input, bool _isSystem) internal {
+         // Transfer the balance to the new address on the constructor call.
+         uint256 value = msg.value;
+-        if (value > 0) {
++        if (value > 0) { //@audit (LOW) since this is uint, != 0 seems more appropriate, as you do in MsgValueSimulator.sol#L35
+             ETH_TOKEN_SYSTEM_CONTRACT.transferFromTo(address(this), _newAddress, value);
+             // Safe to cast value, because `msg.value` <= `uint128.max` due to `MessageValueSimulator` invariant
+             SystemContractHelper.setValueForNextFarCall(uint128(value));
+```
