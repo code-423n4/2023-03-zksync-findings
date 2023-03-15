@@ -7,3 +7,16 @@ https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/DefaultAccount.
 File: RLPEncoder.sol | Line: 45 | assert(_len != 1);
 https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/libraries/RLPEncoder.sol#L45
 
+## 2. Requires without statement
+
+If a require will be used, there should be a statement to inform developer and users.
+
+File: SystemContractHelper.sol | Line: 152 | require(gasleft() >= _gasToBurn);
+https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/libraries/SystemContractHelper.sol#L152
+File: SystemContext.sol | Line: 16 | require(msg.sender == BOOTLOADER_FORMAL_ADDRESS);
+https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/SystemContext.sol#L16
+
+
+
+
+
