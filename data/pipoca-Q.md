@@ -15,6 +15,8 @@ File: SystemContractHelper.sol | Line: 152 | require(gasleft() >= _gasToBurn);
 https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/libraries/SystemContractHelper.sol#L152
 File: SystemContext.sol | Line: 16 | require(msg.sender == BOOTLOADER_FORMAL_ADDRESS);
 https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/SystemContext.sol#L16
+File: NonceHolder.sol | Line: 135 | require(msg.sender == address(DEPLOYER_SYSTEM_CONTRACT), "");
+https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/NonceHolder.sol#L135
 
 
 
