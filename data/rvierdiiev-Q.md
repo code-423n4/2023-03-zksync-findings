@@ -27,3 +27,12 @@ Because of that, `FORCE_DEPLOYER` can do anything he wants and steal all funds f
 #### Recommendation
 Allow to `FORCE_DEPLOYER` to deploy and change only system contracts.
 
+## NonceHolder.increaseMinNonce can silently overflow
+
+#### Description
+NonceHolder.increaseMinNonce function increases `rawNonces` for address. It's allowed to increase nonce [by maximum `MAXIMAL_MIN_NONCE_INCREMENT` value](https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/NonceHolder.sol#L65). Later, `rawNonces` is increased inside `unchecked` block. 
+Because of that it's possible that `rawNonces` for some account will overflow, in case if `increaseMinNonce` function will be caled too many times(more than 2^96 times) with value of `MAXIMAL_MIN_NONCE_INCREMENT`.
+After that nonces can be repeated for the account.
+
+#### Recommendation
+Add check for overflow.
