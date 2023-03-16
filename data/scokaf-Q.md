@@ -127,4 +127,29 @@ Locking the pragma helps to ensure that contracts do not accidentally get deploy
 
 Note that pragma statements can be allowed to float when a contract is intended for consumption by other developers, as in the case of contracts in a library or a package.
 
+# 3: ADD A LIMIT FOR THE MAXIMUM NUMBER OF CHARACTERS PER LINE
+
+Vulnerability details
+
+## Context:
+
+The solidity documentation recommends a maximum of 120 characters.
+
+For reference, see https://docs.soliditylang.org/en/v0.8.17/style-guide.html#maximum-line-length
+
+## Proof of Concept
+
+> ***2 Files, 2 Instances*** 
+
+https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/ContractDeployer.sol#L7
+
+https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/TransactionHelper.sol#L85
+
+## Tools Used
+
+Manual Analysis
+
+### Recommended Mitigation Steps
+
+Consider adding a limit of 120 characters or less to prevent large lines.
 
