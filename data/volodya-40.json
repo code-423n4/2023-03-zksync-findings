@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "volodya",
+  "risk": "3",
+  "title": "`publishCompressedBytecode` function inside `BytecodeCompressor.sol` not working properly",
+  "issueId": 40,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/40"
+}
