@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "anodaram",
+  "risk": "2",
+  "title": "In MsgValueSimulator.fallback(), wrong usage of keyword `return` instead of `revert`",
+  "issueId": 43,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/43"
+}
