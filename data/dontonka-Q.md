@@ -1,4 +1,32 @@
 ```diff
+diff --git a/contracts/BytecodeCompressor.sol b/contracts/BytecodeCompressor.sol
+index 467e56b..e2460fe 100644
+--- a/contracts/BytecodeCompressor.sol
++++ b/contracts/BytecodeCompressor.sol
+@@ -40,7 +40,7 @@ contract BytecodeCompressor is IBytecodeCompressor {
+             (bytes calldata dictionary, bytes calldata encodedData) = _decodeRawBytecode(_rawCompressedData);
+
+             require(dictionary.length % 8 == 0, "Dictionary length should be a multiple of 8");
+-            require(dictionary.length <= 2 ** 16 * 8, "Dictionary is too big");
++            require(dictionary.length <= 2 ** 16 * 8, "Dictionary is too big"); //@audit (QA) should not this be < as otherwise it at 2**16 it would actually overflow 2 Bytes.
+             require(
+                 encodedData.length * 4 == _bytecode.length,
+                 "Encoded data length should be 4 times shorter than the original bytecode"
+@@ -78,8 +78,9 @@ contract BytecodeCompressor is IBytecodeCompressor {
+         unchecked {
+             // The dictionary length can't be more than 2^16, so it fits into 2 bytes.
+             uint256 dictionaryLen = uint256(_rawCompressedData.readUint16(0));
+-            dictionary = _rawCompressedData[2:2 + dictionaryLen * 8];
+-            encodedData = _rawCompressedData[2 + dictionaryLen * 8:];
++            uint256 encodedDataOffset = 2 + dictionaryLen * 8; // @audit (QA) I would add this variable, code would be clearer, easier to understand and as a bonus probably cheaper
++            dictionary = _rawCompressedData[2:encodedDataOffset];
++            encodedData = _rawCompressedData[encodedDataOffset:];
+         }
+     }
+ }
+```
+
+```diff
 diff --git a/contracts/KnownCodesStorage.sol b/contracts/KnownCodesStorage.sol
 index 8e2b1a1..1fd8cda 100644
 --- a/contracts/KnownCodesStorage.sol
