@@ -1,4 +1,22 @@
 ```diff
+diff --git a/contracts/KnownCodesStorage.sol b/contracts/KnownCodesStorage.sol
+index 8e2b1a1..1fd8cda 100644
+--- a/contracts/KnownCodesStorage.sol
++++ b/contracts/KnownCodesStorage.sol
+@@ -94,7 +94,7 @@ contract KnownCodesStorage is IKnownCodesStorage {
+         uint256 meta = SystemContractHelper.getZkSyncMetaBytes();
+         uint256 pricePerPubdataByteInGas = SystemContractHelper.getGasPerPubdataByteFromMeta(meta);
+
+-        uint256 gasToPay = (_l1PreimageBytesLen + BYTECODE_PUBLISHING_OVERHEAD) * pricePerPubdataByteInGas;
++        uint256 gasToPay = (_l1PreimageBytesLen + BYTECODE_PUBLISHING_OVERHEAD) * pricePerPubdataByteInGas; //@audit (QA) why here there is an additional 100 Bytes added, while in L1Messenger.sol#L37 there is only 64 Bytes?
+         _burnGas(Utils.safeCastToU32(gasToPay));
+
+         // Send a log to L1 that bytecode should be known.
+```
+
+
+
+```diff
 diff --git a/contracts/L1Messenger.sol b/contracts/L1Messenger.sol
 index cab7a10..2ae454b 100644
 --- a/contracts/L1Messenger.sol
