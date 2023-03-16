@@ -104,3 +104,27 @@ import {FixedPointMathLib} from "solmate/utils/FixedPointMathLib.sol";
 import {ERC1155, ERC1155TokenReceiver} from "solmate/tokens/ERC1155.sol";
 import {toWadUnsafe, toDaysWadUnsafe} from "solmate/utils/SignedWadMath.sol";
 
+# 2: FLOATING PRAGMA
+
+Vulnerability details
+
+## Context:
+
+All the contracts in scope are floating the pragma version.
+
+
+## Proof of Concept
+
+All contracts in scope
+
+## Tools Used
+
+Manual Analysis
+
+### Recommended Mitigation Steps
+
+Locking the pragma helps to ensure that contracts do not accidentally get deployed using an outdated compiler version.
+
+Note that pragma statements can be allowed to float when a contract is intended for consumption by other developers, as in the case of contracts in a library or a package.
+
+
