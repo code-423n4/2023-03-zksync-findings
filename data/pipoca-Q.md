@@ -107,6 +107,17 @@ https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/libraries/Unsaf
 File: Utils.sol | Line: 2 | pragma solidity >=0.8.0;
 https://github.com/code-423n4/2023-03-zksync/blob/main/contracts/libraries/Utils.sol#L2
 
+## 4. Lack of event emission when state changes occurs 
+
+Contract: NonceHolder.sol
+
+Although the contract emits an event for the `setValueUnderNonce` function, there are no events for other state-changing functions like `increaseMinNonce`, `incrementMinNonceIfEquals`, and `incrementDeploymentNonce`. It is good practice to emit events for all state-changing functions to facilitate easier tracking and monitoring of contract state changes.
+
+https://github.com/code-423n4/2023-03-zksync//blob/main/contracts/NonceHolder.sol#L64
+https://github.com/code-423n4/2023-03-zksync//blob/main/contracts/NonceHolder.sol#L109
+https://github.com/code-423n4/2023-03-zksync//blob/main/contracts/NonceHolder.sol#L134
+
+
 
 
 
