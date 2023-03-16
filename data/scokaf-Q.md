@@ -153,3 +153,24 @@ Manual Analysis
 
 Consider adding a limit of 120 characters or less to prevent large lines.
 
+# 4: USE UNDERSCORES FOR NUMBER LITERALS
+
+Vulnerability details
+
+## Impact:
+
+There are occasions where certain numbers have been hardcoded, either in variables or in the code itself. Large numbers can become hard to read.
+
+## Proof of Concept
+
+> ***File: contracts/SystemContext.sol*** 
+
+https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L40
+
+## Tools Used
+
+Manual Analysis
+
+### Recommended Mitigation Steps
+
+Consider using underscores for number literals to improve their readability.
