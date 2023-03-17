@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "0xbrett8571",
+  "risk": "3",
+  "title": "Overflow/Underflow of Integers vulnerability in the `msg.value` simulation of the zkEVM.",
+  "issueId": 71,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/71"
+}
