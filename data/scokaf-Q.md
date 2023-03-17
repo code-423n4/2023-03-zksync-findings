@@ -199,4 +199,19 @@ Manual Analysis
 
 We recommend using headers for Solidity code layout and readability
 
+# 6: USE CONSTANTS FOR NUMBERS
+
+Vulnerability details
+
+## Context:
+
+In several locations in the code, numbers like 0x00, 0x20, 0x40, and 0x41 are used. The same goes for values like type(uint256).max It is pretty easy to make a mistake somewhere, also when comparing values.
+
+## Tools Used
+
+Manual Analysis
+
+## Recommended Mitigation Steps
+
+So, we recommend defining constants for the numbers used throughout the code.
 
