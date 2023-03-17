@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "Sathish9098",
+  "risk": "3",
+  "title": "The sender lose the gas cost even because the transfer function called with zero value . if we send amount is 0 this transaction also successful. so the sender may lose the gas cost. ",
+  "issueId": 55,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/55"
+}
