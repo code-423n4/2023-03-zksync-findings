@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "datapunk",
+  "risk": "2",
+  "title": "gas usage not accounted for between require and actual gas burning",
+  "issueId": 49,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/49"
+}
