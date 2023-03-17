@@ -174,3 +174,29 @@ Manual Analysis
 ### Recommended Mitigation Steps
 
 Consider using underscores for number literals to improve their readability.
+
+# 5: GENERATE PERFECT CODE HEADERS EVERY TIME
+
+Vulnerability details
+
+## Impact:
+
+Generate perfect code headers every time
+
+For reference, see https://github.com/transmissions11/headers
+
+## Proof of Concept
+
+/*//////////////////////////////////////////////////////////////
+                            TESTING 123
+//////////////////////////////////////////////////////////////*/
+
+## Tools Used
+
+Manual Analysis
+
+### Recommended Mitigation Steps
+
+We recommend using headers for Solidity code layout and readability
+
+
