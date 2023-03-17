@@ -1,5 +1,3 @@
-Taxi driver
-
 # L-01 Fix typos in code/Incorrect natspec
 
 ## Impact
@@ -43,6 +41,7 @@ Manual Review
 ## Recommendation
 
 Use it or remove it.
+
 # L-03 Unapplied modifier
 
 ## Impact
@@ -67,7 +66,7 @@ Add an effective access control to the function if it's to be called only by the
 
 ## Impact
 
-Potențial undesired behaviour if non-practical code gets passed on to production.
+Potential undesired behaviour if non-practical code gets passed on to production.
 
 ## Proof of Concept
 
@@ -82,4 +81,4 @@ Manual Review
 
 ## Recommendation
 
-Advisably, emove all code meant for testing before final production.
+Advisably, remove all code meant for testing before final production.
