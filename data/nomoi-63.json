@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "nomoi",
+  "risk": "2",
+  "title": "MsgValueSimulator quietly returns instead of reverting when `value` is greater than `MAX_MSG_VALUE`",
+  "issueId": 63,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/63"
+}
