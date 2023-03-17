@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "Dravee",
+  "risk": "2",
+  "title": "The `setNewBlock`/`getBlockNumberAndTimestamp` invariant can be broken",
+  "issueId": 59,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/59"
+}
