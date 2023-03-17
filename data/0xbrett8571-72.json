@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "0xbrett8571",
+  "risk": "3",
+  "title": "In the fallback function, the success value of the `transferFromTo` function is not checked, which could result in the loss of funds.",
+  "issueId": 72,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/72"
+}
