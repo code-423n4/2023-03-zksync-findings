@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "Ruhum",
+  "risk": "2",
+  "title": "Attacker can use L1->L2 transactions to register factory deps for free",
+  "issueId": 69,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/69"
+}
