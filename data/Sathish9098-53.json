@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "Sathish9098",
+  "risk": "3",
+  "title": "The transaction will fail when we try to send the the amount exactly equal the balance ",
+  "issueId": 53,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/53"
+}
