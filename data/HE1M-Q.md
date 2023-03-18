@@ -49,4 +49,9 @@ https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c
 
 So, the parameter `_l1PreimageHash` is not accessed at all, and can be removed.
 
+### Q8
+If the `processFlags` is something except `0x00` and `0x02`, `isETHCall` is considered as false. So, it will be interpreted as normal mode (validate and execute).
+https://github.com/code-423n4/2023-03-zksync/blob/01379615bc20c2926d81c0a182f1abb6e922b93a/bootloader/bootloader.yul#L579
+It is recommended to use `switch/case` to handle invalid cases. 
+
 
