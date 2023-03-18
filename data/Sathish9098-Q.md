@@ -88,6 +88,16 @@ FILE : 2023-03-zksync/contracts/NonceHolder.sol
    125:   uint256 addressAsKey = uint256(uint160(_address));
    136:   uint256 addressAsKey = uint256(uint160(_address));
    147:   uint256 addressAsKey = uint256(uint160(_address));
+
+FILE : 2023-03-zksync/contracts/DefaultAccount.sol
+
+    83:   uint32(gasleft()),
+
+[DefaultAccount.sol#L83](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L83)
+
+   94:  if (_transaction.to == uint256(uint160(address(DEPLOYER_SYSTEM_CONTRACT)))) {
+   141: address to = address(uint160(_transaction.to));
+   
    
 
 ##
@@ -191,6 +201,8 @@ Also detail them in documentation and NatSpec comments.
 
 ### [L-5] Hardcode the address causes no future updates
 
+Hardcoding an address can make it difficult to update the contract if the address needs to be changed. This can result in additional development costs and delays.
+
 FILE : 2023-03-zksync/contracts/AccountCodeStorage.sol
 
   22:    bytes32 constant EMPTY_STRING_KECCAK = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
@@ -214,6 +226,14 @@ If we mint 0 amount this is waste of transaction
      }
 
 [L2EthToken.sol#L72-L76](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L72-L76)
+
+FILE: 2023-03-zksync/contracts/SystemContext.sol
+
+  function setGasPrice(uint256 _gasPrice) external onlyBootloader {
+        gasPrice = _gasPrice;
+    }
+
+[SystemContext.sol#L66-L68](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L66-L68)
 
 ### [L-7] The event emit with wrong address
 
@@ -248,6 +268,93 @@ FILE : 2023-03-zksync/contracts/L2EthToken.sol
 Recommended Mitigation:
 
 Add address(0) require check before mint amount to _account address 
+
+##
+
+### [L-9] Use require instead of assert
+
+require is generally suggested over assert in situations where a failure to meet a condition could result in serious problems, such as in safety-critical systems or in financial applications. This is because require is designed to explicitly check for conditions that must be met before the program can continue, and it will throw an exception and halt the program execution if the condition is not met.
+
+On the other hand, assert is typically used for internal sanity checks in a program, and is not intended to catch and handle errors that could occur due to incorrect or unexpected input. While assert can be useful for catching programming errors during development and testing, it is not recommended to use it as the primary error-handling mechanism in a production environment
+
+FILE : 2023-03-zksync/contracts/DefaultAccount.sol
+
+   225: assert(msg.sender != BOOTLOADER_FORMAL_ADDRESS);
+
+[DefaultAccount.sol#L225](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L225)
+
+##
+
+### [L-10] The _immutables array length not checked with > 0 . As per current implementation contract will call setImmutables() function with empty array.
+
+If call setImmutables() with empty array this function not throughs any error 
+
+FILE : 2023-03-zksync/contracts/ImmutableSimulator.sol
+
+    function setImmutables(address _dest, ImmutableData[] calldata _immutables) external override {
+        require(msg.sender == address(DEPLOYER_SYSTEM_CONTRACT), "Callable only by the deployer system contract");
+        unchecked {
+
+[ImmutableSimulator.sol#L33-L41](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/ImmutableSimulator.sol#L33-L41)
+
+Recommended Mitigation:
+
+require(_immutables.length>0, "Empty array");
+
+##
+
+### [L-11] Converting address to uint256 may cause unexpected behavior
+
+Main drawback of converting an address to a uint256 using the expression uint256(uint160(_address)) is that the resulting uint256 value will contain 12 additional zero bytes in the higher-order bits. These extra zeros will not change the actual address value, but they may cause unexpected behavior if the resulting uint256 value is used in a comparison or other operation that expects only the address value.
+
+FILE : 2023-03-zksync/contracts/ImmutableSimulator.sol
+
+  27:  return immutableDataStorage[uint256(uint160(_dest))][_index];
+
+  40:  immutableDataStorage[uint256(uint160(_dest))][index] = value;
+
+[ImmutableSimulator.sol#L40](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/ImmutableSimulator.sol#L40)
+
+##
+
+### [L-12] The deprecated keccak function used 
+
+ It has been deprecated and replaced by keccak256 due to concerns about interoperability and confusion with other SHA-3 implementations
+
+FILE: 2023-03-zksync/contracts/L1Messenger.sol
+
+  23: hash = EfficientCall.keccak(_message);
+
+[L1Messenger.sol#L23](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L1Messenger.sol#L23)
+
+Recommended Mitigation:
+
+ Use keccak256 function instead of keccak
+
+##
+
+### [L-13] LACK OF CHECKS ADDRESS(0)
+
+_address not checked with ADDRESS(0). Its possible to store addressAsKey value to ADDRESS(0)
+
+FILE : 2023-03-zksync/contracts/AccountCodeStorage.sol
+
+   function storeAccountConstructingCodeHash(address _address, bytes32 _hash) external override onlyDeployer {
+        // Check that code hash corresponds to the deploying smart contract
+        require(Utils.isContractConstructing(_hash), "Code hash is not for a contract on constructor");
+
+        uint256 addressAsKey = uint256(uint160(_address));
+        assembly {
+            sstore(addressAsKey, _hash)
+        }
+    }
+
+[AccountCodeStorage.sol#L34-L42](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/AccountCodeStorage.sol#L34-L42)
+
+Recemented mitigation:
+
+  require(_address != address(0),"Zero Address");
+
 
   
 
@@ -307,6 +414,18 @@ FILE : 2023-03-zksync/contracts/KnownCodesStorage.sol
 
 [KnownCodesStorage.sol#L3](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/KnownCodesStorage.sol#L3)
 
+FILE : 2023-03-zksync/contracts/DefaultAccount.sol
+
+   3: pragma solidity ^0.8.0;
+
+[DefaultAccount.sol#L3](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L3)
+
+FILE : 2023-03-zksync/contracts/BootloaderUtilities.sol
+
+   3: pragma solidity ^0.8.0;
+
+[BootloaderUtilities.sol#L3](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BootloaderUtilities.sol#L3)
+
 Recommended Mitigation :
 
 Consider using latest solidity version at least 0.8.17
@@ -360,6 +479,24 @@ FILE : 2023-03-zksync/contracts/KnownCodesStorage.sol
 
 [KnownCodesStorage.sol#L5-L8](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/KnownCodesStorage.sol#L5-L8)
 
+FILE : 2023-03-zksync/contracts/DefaultAccount.sol
+
+    import "./interfaces/IAccount.sol";
+    import "./libraries/TransactionHelper.sol";
+    import "./libraries/SystemContractHelper.sol";
+    import "./libraries/EfficientCall.sol";
+
+[DefaultAccount.sol#L5-L8](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L5-L8)
+
+FILE : 2023-03-zksync/contracts/BootloaderUtilities.sol
+ 
+   import "./interfaces/IBootloaderUtilities.sol";
+   import "./libraries/TransactionHelper.sol";
+   import "./libraries/RLPEncoder.sol";
+   import "./libraries/EfficientCall.sol";
+
+[BootloaderUtilities.sol#L5-L8](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BootloaderUtilities.sol#L5-L8)
+
 ##
 
 ### [N-3] NOT USING THE NAMED RETURN VARIABLES ANYWHERE IN THE FUNCTION IS CONFUSING
@@ -389,10 +526,11 @@ FILE: 2023-03-zksync/contracts/MsgValueSimulator.sol
 [NonceHolder.sol#L124](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol#L124)
 [NonceHolder.sol#L134](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol#L134)
 [DefaultAccount.sol#L57-L70](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L57-L70)
-
+[DefaultAccount.sol#L57-L70](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L57-L70)
+[BootloaderUtilities.sol#L23-L25](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BootloaderUtilities.sol#L23-L25)
+[BootloaderUtilities.sol#L43](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BootloaderUtilities.sol#L43)
 
 ##
-
 ### [NC-4] Pragma float
 
 All the contracts in scope are floating the pragma version.
@@ -404,7 +542,7 @@ Note that pragma statements can be allowed to float when a contract is intended 
 
 ##
 
-### [NC-5] CONSTANTS SHOULD BE DEFINED RATHER THAN USING MAGIC NUMBERS
+### [NC-5] USE CONSTANTS INSTEAD OF USING NUMBERS DIRECTLY 
 
   It is bad practice to use numbers directly in code without explanation
 
@@ -424,6 +562,13 @@ FILE : 2023-03-zksync/contracts/BytecodeCompressor.sol
             );
 
 [BytecodeCompressor.sol#L42-L47](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BytecodeCompressor.sol#L42-L47)
+
+     163:   require(_signature.length == 65, "Signature length is incorrect");
+     176:   require(v == 27 || v == 28, "v is neither 27 nor 28");
+
+[DefaultAccount.sol#L163](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L163)
+
+  
 
 ##
 
@@ -507,6 +652,14 @@ FILE : 2023-03-zksync/contracts/KnownCodesStorage.sol
 
 [EmptyContract.sol#L11-L13](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/EmptyContract.sol#L11-L13)
 
+FILE: 2023-03-zksync/contracts/DefaultAccount.sol
+
+    receive() external payable {
+        // If the contract is called directly, behave like an EOA
+    }
+
+[DefaultAccount.sol#L230-L232](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L230-L232)
+
 ##
 
 ### [NC-9] CONSTANTS SHOULD BE DEFINED RATHER THAN USING MAGIC NUMBERS 
@@ -538,6 +691,9 @@ FILE : 2023-03-zksync/contracts/NonceHolder.sol
 [SystemContext.sol#L70-L73](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L70-L73)
 
 [KnownCodesStorage.sol#L115-L117](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/KnownCodesStorage.sol#L115-L117)
+[DefaultAccount.sol#L57-L70](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L57-L70)
+[DefaultAccount.sol#L74-L80](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L74-L80)
+[ContractDeployer.sol#L31-L32](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/ContractDeployer.sol#L31-L32)
 
 ##
 
@@ -580,6 +736,8 @@ Using scientific notation for large multiples of ten will improve code readabili
    97: function getBlockTimestamp() public view returns (uint256 timestamp) {
 
 [SystemContext.sol#L97](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L97)
+
+[ContractDeployer.sol#L38](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/ContractDeployer.sol#L38)
 
 ##
 
@@ -628,6 +786,8 @@ Recommended Mitigation:
 
 [KnownCodesStorage.sol#L115-L117](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/KnownCodesStorage.sol#L115-L117)
 
+[ContractDeployer.sol#L31-L32](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/ContractDeployer.sol#L31-L32)
+
 ##
 
 ### [NC-15] The NATSPEC @notice function definition is inappropriate
@@ -672,6 +832,32 @@ FILE : 2023-03-zksync/contracts/KnownCodesStorage.sol
 Write public functions top of the internal functions. Now the public function is written bellow the internal functions 
 
 [KnownCodesStorage.sol#L90-L130](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/KnownCodesStorage.sol#L90-L130)
+
+Move external functions above the internal function 
+
+[DefaultAccount.sol#L162-L219](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L162-L219)
+[ContractDeployer.sol#L53-L64](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/ContractDeployer.sol#L53-L64)
+
+##
+
+### [NC-17] For functions, follow Solidity standard naming conventions (internal function style rule)
+
+FILE : 2023-03-zksync/contracts/BootloaderUtilities.sol
+
+   43: function encodeLegacyTransactionHash(Transaction calldata _transaction) internal view returns (bytes32 
+       txHash) {
+
+[BootloaderUtilities.sol#L43](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BootloaderUtilities.sol#L43)
+
+   183: function encodeEIP2930TransactionHash(Transaction calldata _transaction) internal view returns (bytes32) {
+
+[BootloaderUtilities.sol#L138](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BootloaderUtilities.sol#L138)
+
+   228: function encodeEIP1559TransactionHash(Transaction calldata _transaction) internal view returns (bytes32) {
+
+[BootloaderUtilities.sol#L228](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BootloaderUtilities.sol#L228)
+
+
 
 
    
