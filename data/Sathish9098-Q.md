@@ -122,20 +122,9 @@ FILE : 2023-03-zksync/contracts/NonceHolder.sol
 
 [NonceHolder.sol#L172](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol#L172)
 
-
 ##
 
-### [L-3] REQUIRE MESSAGES ARE TOO SHORT AND UNCLEAR
-
-FILE : 2023-03-zksync/contracts/L1Messenger.sol
- 
-   47: require(precompileCallSuccess);
-
-[L1Messenger.sol#L47](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L1Messenger.sol#L47)
-
-##
-
-### [L-4] A single point of failure
+### [L-3] A single point of failure
 
 The onlyDeployer role has a single point of failure and onlyDeployer can use critical a few functions.
 
@@ -199,9 +188,9 @@ Also detail them in documentation and NatSpec comments.
 
 ##
 
-### [L-5] Hardcode the address causes no future updates
+### [L-4] Hardcode the address causes no future updates
 
-Hardcoding an address can make it difficult to update the contract if the address needs to be changed. This can result in additional development costs and delays.
+Hardcode the address causes no future updates" means that if an address is hardcoded in the code, it cannot be changed without modifying the code itself. This can be problematic if the address needs to be changed in the future, such as if the contract needs to interact with a different contract or if the owner of the contract changes. Hardcoding an address in this way can make the code inflexible and difficult to maintain, as any changes to the address would require a code update and redeployment
 
 FILE : 2023-03-zksync/contracts/AccountCodeStorage.sol
 
@@ -209,9 +198,13 @@ FILE : 2023-03-zksync/contracts/AccountCodeStorage.sol
 
 [AccountCodeStorage.sol#L22](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/AccountCodeStorage.sol#L22)
 
+Recommended Mitigation:
+
+To avoid this issue, it is common to use a variable or function to store the address, rather than hardcoding it directly in the code. This allows the address to be easily changed in the future without requiring any code changes
+
 ##
 
-### [L-6] Lack of input validations
+### [L-5] Lack of input validations
 
 The _amount is not checked with non zero value
 
@@ -235,23 +228,9 @@ FILE: 2023-03-zksync/contracts/SystemContext.sol
 
 [SystemContext.sol#L66-L68](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L66-L68)
 
-### [L-7] The event emit with wrong address
-
-The amount is reduced from address(this).So the withdraw event from address should be address(this) instead of msg.sender 
-
-FILE : 2023-03-zksync/contracts/L2EthToken.sol
-
-   93:   emit Withdrawal(msg.sender, _l1Receiver, amount);
-
-[L2EthToken.sol#L93](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L93)
-
-Recommended Mitigation:
-
- emit Withdrawal(address(this), _l1Receiver, amount);
-
 ##
 
-### [L-8] _account can be address(0)
+### [L-6] _account can be address(0)
 
 Can possible to mint wrongly to zero address 
 
@@ -271,11 +250,19 @@ Add address(0) require check before mint amount to _account address
 
 ##
 
-### [L-9] Use require instead of assert
+### [L-7] Use require instead of assert
 
-require is generally suggested over assert in situations where a failure to meet a condition could result in serious problems, such as in safety-critical systems or in financial applications. This is because require is designed to explicitly check for conditions that must be met before the program can continue, and it will throw an exception and halt the program execution if the condition is not met.
+Description
+Assert should not be used except for tests, require should be used.
 
-On the other hand, assert is typically used for internal sanity checks in a program, and is not intended to catch and handle errors that could occur due to incorrect or unexpected input. While assert can be useful for catching programming errors during development and testing, it is not recommended to use it as the primary error-handling mechanism in a production environment
+Prior to Solidity 0.8.0, pressing a confirm consumes the remainder of the process’s available gas instead of returning it, as request()/revert() did.
+
+assert() and require();
+The big difference between the two is that the assert()function when false, uses up all the remaining gas and reverts all the changes made.
+Meanwhile, a require() function when false, also reverts back all the changes made to the contract but does refund all the remaining gas fees we offered to pay.
+This is the most common Solidity function used by developers for debugging and error handling.
+
+Assertion() should be avoided even after solidity version 0.8.0, because its documentation states “The Assert function generates an error of type Panic(uint256).Code that works properly should never Panic, even on invalid external input. If this happens, you need to fix it in your contract. There’s a mistake”.
 
 FILE : 2023-03-zksync/contracts/DefaultAccount.sol
 
@@ -285,7 +272,7 @@ FILE : 2023-03-zksync/contracts/DefaultAccount.sol
 
 ##
 
-### [L-10] The _immutables array length not checked with > 0 . As per current implementation contract will call setImmutables() function with empty array.
+### [L-8] The _immutables array length not checked with > 0 . As per current implementation contract will call setImmutables() function with empty array.
 
 If call setImmutables() with empty array this function not throughs any error 
 
@@ -303,7 +290,7 @@ require(_immutables.length>0, "Empty array");
 
 ##
 
-### [L-11] Converting address to uint256 may cause unexpected behavior
+### [L-9] Converting address to uint256 may cause unexpected behavior
 
 Main drawback of converting an address to a uint256 using the expression uint256(uint160(_address)) is that the resulting uint256 value will contain 12 additional zero bytes in the higher-order bits. These extra zeros will not change the actual address value, but they may cause unexpected behavior if the resulting uint256 value is used in a comparison or other operation that expects only the address value.
 
@@ -317,7 +304,7 @@ FILE : 2023-03-zksync/contracts/ImmutableSimulator.sol
 
 ##
 
-### [L-12] The deprecated keccak function used 
+### [L-10] The deprecated keccak function used 
 
  It has been deprecated and replaced by keccak256 due to concerns about interoperability and confusion with other SHA-3 implementations
 
@@ -333,7 +320,19 @@ Recommended Mitigation:
 
 ##
 
-### [L-13] LACK OF CHECKS ADDRESS(0)
+### [L-11] The possibility of an underflow of balance[address(this)] and totalSupply exists if the msg.sender requests a withdrawal amount greater than the balances of totalSupply and balance[address(this)]
+
+FILE : 2023-03-zksync/contracts/L2EthToken.sol
+
+[L2EthToken.sol#L80-L94](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L80-L94)
+
+Recommendations:
+
+The withdrawal amount must be less than the balance of balance[address(this)] and totalSupply
+
+##
+
+### [L-12] LACK OF CHECKS ADDRESS(0)
 
 _address not checked with ADDRESS(0). Its possible to store addressAsKey value to ADDRESS(0)
 
@@ -432,7 +431,7 @@ Consider using latest solidity version at least 0.8.17
 
 ##
 
-### [NC-2] Named imports can be used
+### [NC-2] For modern and more readable code; update import usages
 
 It’s possible to name the imports to improve code readability. E.g. import "@openzeppelin/contracts/token/ERC20/IERC20.sol"; can be rewritten as import {IERC20} from “import “@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol”
 
@@ -856,6 +855,56 @@ FILE : 2023-03-zksync/contracts/BootloaderUtilities.sol
    228: function encodeEIP1559TransactionHash(Transaction calldata _transaction) internal view returns (bytes32) {
 
 [BootloaderUtilities.sol#L228](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BootloaderUtilities.sol#L228)
+
+##
+
+### [NC-18] NatSpec comments should be increased in contracts
+Context
+All Contracts
+
+Description:
+It is recommended that Solidity contracts are fully annotated using NatSpec for all public interfaces (everything in the ABI). It is clearly stated in the Solidity official documentation.
+
+In complex projects such as Defi, the interpretation of all functions and their arguments and returns is important for code readability and auditability. (https://docs.soliditylang.org/en/v0.8.15/natspec-format.html)
+
+Recommendation
+NatSpec comments should be increased in contracts.
+
+##
+
+### [NC-19] Use underscores for number literals
+
+2023-03-zksync/contracts/SystemContext.sol
+
+    40:   uint256 public difficulty = 2500000000000000;
+
+[SystemContext.sol#L40](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L40)
+
+
+Add an event for critical parameter changes
+
+Missing unit tests
+Use time units directly
+Declare interfaces on separate files
+Add a limit for the maximum number of characters per line
+Lack of spacing in comment
+Critical changes should use two-step procedure
+Missing NATSPEC
+Interchangeable usage of uint and uint256
+Move require/validation statements to the top of the function when validating input parameters
+Constant redefined elsewhere
+Convert repeated validation statements into a function modifier to improve code reusability
+Prevent division by 0
+Use of EIP 4337, which is likely to change, not recommended for general use or application
+Front running attacks by the onlyOwner
+Unused function parameter and local variable
+Initial value check is missing in Set Functions
+Add a timelock to critical functions
+Test environment comments and codes should not be in the main version
+Use of bytes.concat() instead of abi.encodePacked()
+Use underscores for number literals
+
+
 
 
 
