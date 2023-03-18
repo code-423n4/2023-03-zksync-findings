@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "HE1M",
+  "risk": "2",
+  "title": "Bytecode hash of `AccountCodeStorage` is not stored in its mapping",
+  "issueId": 88,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/88"
+}
