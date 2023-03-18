@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "poirots",
+  "risk": "2",
+  "title": "Missing constraints on force contract deployment",
+  "issueId": 85,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/85"
+}
