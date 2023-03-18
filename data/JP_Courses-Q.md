@@ -4,13 +4,31 @@ I decided to focus only on the bootloader.yul file.
 https://github.com/code-423n4/2023-03-zksync/blob/main/bootloader/bootloader.yul
 
 
-Recommendations:
+RECOMMENDATIONS:
 
-- Yul pointers are vulnerable to Pointer arithmetic errors & memory manipulation, but also: overflows and underflows, use-after-free errors, uninitialized pointer errors, null pointer dereferencing, memory leaks.
-- carefully manage pointers and memory in Yul code, including ensuring proper initialization and null value checks, using pointer arithmetic cautiously, validating user input, and allocating and releasing memory properly.
+Pointer and memory management:
+Ensure proper initialization and null value checks, use pointer arithmetic cautiously, validate user input, and allocate and release memory properly. Additionally, consider using a memory-safe language or library to avoid these types of vulnerabilities altogether.
+
+Reentrancy attacks:
+To prevent reentrancy attacks, consider moving the ether transfer to the end of the function, after all internal state updates have been made. Alternatively, use the Checks-Effects-Interactions pattern to ensure that all state changes are made before any external interactions.
+
+Insufficient validation:
+To prevent financial losses due to insufficient validation, perform adequate checks to validate all user input, including the gasPerPubdata and userProvidedPubdataPrice parameters. Ensure that all input values are properly validated and formatted before being used in calculations or updates.
+
+Function visibility specifier:
+Explicitly define the visibility of all functions to avoid unintended behavior. Consider making functions that are only used internally private, and those that may be called externally public.
+
+Caller authorization:
+Ensure that only authorized callers can perform sensitive functions such as minting ETH. Consider implementing a permission system or access control list to restrict access to these functions.
+
+L1 transaction validity:
+Before processing an L1 transaction, perform proper validation to ensure that the transaction data is valid and not malicious. Consider using a library or built-in function to validate transaction data.
+
+Untrusted input:
+Validate all input values, including innerTxDataOffset, transactionIndex, gasPerPubdata, intrinsicGas, and intrinsicPubdata, to prevent attackers from manipulating the behavior of the contract. Use strict data typing and format validation to ensure that input values are properly formatted and within expected ranges.
 
 
-Observations:
+OBSERVATIONS:
 
 https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/bootloader/bootloader.yul#L707
 
