@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "Sathish9098",
+  "risk": "3",
+  "title": "The Risk of Adding an Incorrect Previous Block Hash Value in a Blockchain Network",
+  "issueId": 108,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/108"
+}
