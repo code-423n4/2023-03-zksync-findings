@@ -54,4 +54,33 @@ If the `processFlags` is something except `0x00` and `0x02`, `isETHCall` is cons
 https://github.com/code-423n4/2023-03-zksync/blob/01379615bc20c2926d81c0a182f1abb6e922b93a/bootloader/bootloader.yul#L579
 It is recommended to use `switch/case` to handle invalid cases. 
 
+### Q9
+In EVM, `blockhash(block.number) = bytes32(0)`. In zKSync, when emulating the opcode `blockhash`, it is better to explicitly define the case that `_block` is equal to `block.number` will results in bytes32(0).
+https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L74
+
+Although if `_block == block.number`, the else branch will be executed, and the mapping returns bytes32(0), but in case the blocks in L2 are reorged and the state of the blockhash is not set to zero, we may have `blockHash[block.number] != 0`.
+
+The recommendation is using `<=` instead of `<`:
+```
+function getBlockHashEVM(uint256 _block) external view returns (bytes32 hash) {
+        if (block.number <= _block || block.number - _block > 256) {
+            hash = bytes32(0);
+        } else {
+            hash = blockHash[_block];
+        }
+    }
+```
+Or
+```
+function getBlockHashEVM(uint256 _block) external view returns (bytes32 hash) {
+        if (block.number < _block || block.number - _block > 256) {
+            hash = bytes32(0);
+        } else {
+            hash = blockHash[_block];
+            if(_block == block.number){
+                 assert(hash == bytes32(0));
+            }
+        }
+    }
+```
 
