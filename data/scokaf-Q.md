@@ -320,3 +320,26 @@ Consider moving the validation on L47 above the conditional on L23 for sendToL1(
 > ***utils/Address.sol*** 
 
 > ***libraries/TransactionHelper.sol*** 
+
+# 10: LARGE MULTIPLES OF TEN SHOULD USE SCIENTIFIC NOTATION
+
+Vulnerability details
+
+## Context:
+
+Large multiples of ten should use scientific notation.
+
+## Proof of Concept
+
+> ***File: contracts/SystemContext.sol*** 
+
+https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L40
+
+## Tools Used
+
+Manual Analysis
+
+### Recommended Mitigation Steps
+
+Using scientific notation for large multiples of ten will improve code readability.
+
