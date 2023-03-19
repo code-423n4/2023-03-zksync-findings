@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "ronnyx2017",
+  "risk": "3",
+  "title": "The call to MsgValueSimulator with non zero msg.value will call to sender itself which will bypass the onlySelf check",
+  "issueId": 153,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/153"
+}
