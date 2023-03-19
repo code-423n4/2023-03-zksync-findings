@@ -215,7 +215,7 @@ Manual Analysis
 
 We recommend defining constants for the numbers used throughout the code.
 
-# 5: FUNCTION WRITING THAT DOES NOT COMPLY WITH THE SOLIDITY STYLE GUIDE
+# 7: FUNCTION WRITING THAT DOES NOT COMPLY WITH THE SOLIDITY STYLE GUIDE
 
 Vulnerability details
 
@@ -241,3 +241,26 @@ For reference, see https://docs.soliditylang.org/en/v0.8.17/style-guide.html
 ### Tools Used
 
 Manual Analysis.
+
+# 8: IMPORTS CAN BE GROUPED TOGETHER
+
+Vulnerability details
+
+## Context:
+
+Imports can be grouped together.
+
+## Proof of Concept
+
+> ***File: L2EthToken.sol*** 
+
+https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L5-L8
+
+## Tools Used
+
+Manual Analysis
+
+### Recommended Mitigation Steps
+
+Consider importing OZ first, then all interfaces, then all utils.
+
