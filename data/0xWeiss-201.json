@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "0xWeiss",
+  "risk": "3",
+  "title": "Unchecked msg.value will lead to losing funs inside the contract",
+  "issueId": 201,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/201"
+}
