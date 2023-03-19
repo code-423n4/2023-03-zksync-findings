@@ -134,19 +134,55 @@ File: L2EthToken.sol
 
 ## 1.6. `require()` should be used for checking error conditions on inputs and return values while `assert()` should be used for invariant checking
 
-Properly functioning code should **never** reach a failing assert statement, unless there is a bug in your contract you should fix. [Here](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/RLPEncoder.sol#L45), I believe the assert should be a require or a revert:
-
-```solidity
-libraries/RLPEncoder.sol:45:        assert(_len != 1);
-```
-
-As the Solidity version is > 0.8.* the remaining gas would still be refunded in case of failure.
-
-Notice that [the following use](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L225) of `assert` is totally justified:
+Properly functioning code should **never** reach a failing assert statement, unless there is a bug in your contract you should fix. [Here](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L225), I believe the `assert` should be a `require` statement, as it's checking what a specific user is doing:
 
 ```solidity
 DefaultAccount.sol:225:        assert(msg.sender != BOOTLOADER_FORMAL_ADDRESS);  
 ```
+
+As the Solidity version is > 0.8.* the remaining gas would still be refunded in case of failure.
+
+Notice that, on the opposite side, [the following use](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/RLPEncoder.sol#L45) of `assert` is totally justified:
+
+```solidity
+contracts/libraries/RLPEncoder.sol
+44:     function encodeNonSingleBytesLen(uint64 _len) internal pure returns (bytes memory) {
+45:         assert(_len != 1);
+46:         return _encodeLength(_len, 0x80);
+47:     }
+```
+
+This is due to the fact that, in all of the codebase, each call to `RLPEncoder.encodeNonSingleBytesLen()` is already made under the condition that the input is `!= 1`, making this `assert` an effective "invariant check":
+
+```solidity
+contracts/BootloaderUtilities.sol:
+   68              if (txDataLen != 1) {
+   69                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+   70:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+
+  164              if (txDataLen != 1) {
+  165                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+  166:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+
+  259              if (txDataLen != 1) {
+  260                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+  261:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+
+contracts/libraries/TransactionHelper.sol:
+  171              if (txDataLen != 1) {
+  172                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+  173:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+
+  249              if (txDataLen != 1) {
+  250                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+  251:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+
+  321              if (txDataLen != 1) {
+  322                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+  323:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+```
+
+As an additional note: this repeated sentence could be rephrased as it's not easy to understand/feels grammatically incorrect: `If the length is not equal to one, then only using the length can it be encoded definitely`.
 
 ## 1.7. Lack of a `L2EthToken.burn` method only callable by the Bootloader
 
