@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "unforgiven",
+  "risk": "2",
+  "title": "funds may be lost when calling forceDeployOnAddress() with callConstructor as false",
+  "issueId": 178,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/178"
+}
