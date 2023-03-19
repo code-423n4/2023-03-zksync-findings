@@ -1,8 +1,9 @@
 **Overview**
+
 Risk Rating | Number of issues
 --- | ---
-Low Risk | 9 (+ 1 OOS mitigation)
-Non-Critical Risk | 12
+Low Risk | 8 (+ 1 OOS mitigation)
+Non-Critical Risk | 13
 
 **Table of Contents**
 
@@ -11,29 +12,31 @@ Non-Critical Risk | 12
   - [1.2. Add `verifyingContract` to `EIP712_DOMAIN_TYPEHASH`](#12-add-verifyingcontract-to-eip712_domain_typehash)
   - [1.3. `BytecodeCompressor.publishCompressedBytecode()` can receive funds](#13-bytecodecompressorpublishcompressedbytecode-can-receive-funds)
   - [1.4. No event emitted when updating a state variable](#14-no-event-emitted-when-updating-a-state-variable)
-  - [1.5. Unjustified `unchecked`](#15-unjustified-unchecked)
-  - [1.6. `require()` should be used for checking error conditions on inputs and return values while `assert()` should be used for invariant checking](#16-require-should-be-used-for-checking-error-conditions-on-inputs-and-return-values-while-assert-should-be-used-for-invariant-checking)
-  - [1.7. Lack of a `L2EthToken.burn` method only callable by the Bootloader](#17-lack-of-a-l2ethtokenburn-method-only-callable-by-the-bootloader)
-  - [1.8. Create an `onlyDeployerSystemContract` modifier and avoid a missing a friendly revert string](#18-create-an-onlydeployersystemcontract-modifier-and-avoid-a-missing-a-friendly-revert-string)
-  - [1.9. `modifier onlyBootloader` is declared at 3 places and is missing a friendly revert string at one](#19-modifier-onlybootloader-is-declared-at-3-places-and-is-missing-a-friendly-revert-string-at-one)
-  - [1.10. (OOS) Discouraged use of `safeApprove`](#110-oos-discouraged-use-of-safeapprove)
+  - [1.5. Lack of a `L2EthToken.burn` method only callable by the Bootloader](#15-lack-of-a-l2ethtokenburn-method-only-callable-by-the-bootloader)
+  - [1.6. Unjustified `unchecked`](#16-unjustified-unchecked)
+  - [1.7. Create an `onlyDeployerSystemContract` modifier and avoid a missing a friendly revert string](#17-create-an-onlydeployersystemcontract-modifier-and-avoid-a-missing-a-friendly-revert-string)
+  - [1.8. `modifier onlyBootloader` is declared at 3 places and is missing a friendly revert string at one](#18-modifier-onlybootloader-is-declared-at-3-places-and-is-missing-a-friendly-revert-string-at-one)
+  - [1.9. (OOS) Discouraged use of `safeApprove`. Use `safeIncreaseAllowance` here instead](#19-oos-discouraged-use-of-safeapprove-use-safeincreaseallowance-here-instead)
 - [2. Non-Critical Issues](#2-non-critical-issues)
   - [2.1. Offsets for `META_HEAP_SIZE_OFFSET` are excessively confusing](#21-offsets-for-meta_heap_size_offset-are-excessively-confusing)
   - [2.2. No need to check that `v == 27 || v == 28` with `ecrecover`](#22-no-need-to-check-that-v--27--v--28-with-ecrecover)
   - [2.3. Tautology when checking `recoveredAddress`](#23-tautology-when-checking-recoveredaddress)
   - [2.4. Document the mechanism under `SystemContext.getBlockNumberAndTimestamp()`](#24-document-the-mechanism-under-systemcontextgetblocknumberandtimestamp)
   - [2.5. Document why all fields under `ZkSyncMeta` aren't returned in `SystemContractHelper.getZkSyncMeta()`](#25-document-why-all-fields-under-zksyncmeta-arent-returned-in-systemcontracthelpergetzksyncmeta)
-  - [2.6. Consider only declaring 1 contract, or 1 library, or 1 interface, or 1 abstract contract in a file](#26-consider-only-declaring-1-contract-or-1-library-or-1-interface-or-1-abstract-contract-in-a-file)
+  - [2.6. `require()` should be used for checking error conditions on inputs and return values while `assert()` should be used for invariant checking](#26-require-should-be-used-for-checking-error-conditions-on-inputs-and-return-values-while-assert-should-be-used-for-invariant-checking)
   - [2.7. Typos](#27-typos)
-  - [2.8. Default Visibility](#28-default-visibility)
-  - [2.9. Adding a `return` statement when the function defines a named return variable, is redundant](#29-adding-a-return-statement-when-the-function-defines-a-named-return-variable-is-redundant)
-  - [2.10. `2500000000000000` should be changed to `2.5e15` for readability reasons](#210-2500000000000000-should-be-changed-to-25e15-for-readability-reasons)
-  - [2.11. Use `string.concat()` or `bytes.concat()` along with a more recent version of Solidity](#211-use-stringconcat-or-bytesconcat-along-with-a-more-recent-version-of-solidity)
-  - [2.12. Import declarations should import specific identifiers, rather than the whole file](#212-import-declarations-should-import-specific-identifiers-rather-than-the-whole-file)
+  - [2.8. Consider only declaring 1 contract, or 1 library, or 1 interface, or 1 abstract contract in a file](#28-consider-only-declaring-1-contract-or-1-library-or-1-interface-or-1-abstract-contract-in-a-file)
+  - [2.9. Default Visibility](#29-default-visibility)
+  - [2.10. Adding a `return` statement when the function defines a named return variable, is redundant](#210-adding-a-return-statement-when-the-function-defines-a-named-return-variable-is-redundant)
+  - [2.11. `2500000000000000` should be changed to `2.5e15` for readability reasons](#211-2500000000000000-should-be-changed-to-25e15-for-readability-reasons)
+  - [2.12. Use `string.concat()` or `bytes.concat()` along with a more recent version of Solidity](#212-use-stringconcat-or-bytesconcat-along-with-a-more-recent-version-of-solidity)
+  - [2.13. Import declarations should import specific identifiers, rather than the whole file](#213-import-declarations-should-import-specific-identifiers-rather-than-the-whole-file)
 
 # 1. Low Risk Issues
 
 ## 1.1. The `value > MAX_MSG_VALUE` check in `MsgValueSimulator.fallback()` should be made before the `value != 0` check
+
+*Category: Incorrect Function*
 
 The [fallback](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/MsgValueSimulator.sol#L32-L63) method first checks that `value != 0` before executing code with it and then checks for the `value > MAX_MSG_VALUE` revert condition. These checks should be swapped for the logic of the `fallback` to be right:
 
@@ -85,6 +88,8 @@ The [fallback](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75ad
 
 ## 1.2. Add `verifyingContract` to `EIP712_DOMAIN_TYPEHASH`
 
+*Category: Known protection against attacks*
+
 - [EIP712](https://eips.ethereum.org/EIPS/eip-712#definition-of-domainseparator)
 - [EthVigil note about domain separator](https://ethvigil.com/docs/eip712_sign_example_code/#a-note-about-domain_separator)
 
@@ -111,17 +116,29 @@ If adding a `verifyingContract` isn't an option for some reason, consider docume
 
 ## 1.3. `BytecodeCompressor.publishCompressedBytecode()` can receive funds
 
+*Category: State handling*
+
 [BytecodeCompressor.sol#L38](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BytecodeCompressor.sol#L38) is `payable` for no apparent reason, so the contract can receive funds and there are no apparent mechanism to retrieve them. If `payable` is really relevant and the contract is expected to be able to receive funds, consider documenting it, otherwise it's possible that funds could be locked (no immediately visible/apparent/documented ways to retrieve funds).
 
 ## 1.4. No event emitted when updating a state variable
+
+*Category: State handling*
 
 The [increaseMinNonce](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol#L64-L75), [incrementMinNonceIfEquals](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol#L109-L119) and [incrementDeploymentNonce](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol#L134-L144) methods in [NonceHolder](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol) don't emit events.
 
 Not emitting events when changing state variables is a bad practice and can be seen as a trust issue
 
-## 1.5. Unjustified `unchecked`
+## 1.5. Lack of a `L2EthToken.burn` method only callable by the Bootloader
 
-The [following](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L83-L87) is not documented and it's not obvious to understand why it could justified:
+*Category: State handling*
+
+While there exist a [L2EthToken.withdraw](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L80-L94) method that silently burns tokens, it's quite possible to `mint` more token that could ever be `withdraw`n due to the [presence of `msg.value`](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L81). While this would be self-sabotage or a mistake in the Bootloader, it still means that burning tokens is a lot more difficult than minting it. Consider adding a `L2EthToken.burn` method only callable by the Bootloader.
+
+## 1.6. Unjustified `unchecked`
+
+*Category: Issues with comments*
+
+The [following](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L83-L87) is not documented and it's not obvious to understand why it could justified. Given how `unchecked` blocks can be dangerous, the lack of comment here is a real issue:
 
 ```solidity
 File: L2EthToken.sol
@@ -132,63 +149,9 @@ File: L2EthToken.sol
 87:         }
 ```
 
-## 1.6. `require()` should be used for checking error conditions on inputs and return values while `assert()` should be used for invariant checking
+## 1.7. Create an `onlyDeployerSystemContract` modifier and avoid a missing a friendly revert string
 
-Properly functioning code should **never** reach a failing assert statement, unless there is a bug in your contract you should fix. [Here](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L225), I believe the `assert` should be a `require` statement, as it's checking what a specific user is doing:
-
-```solidity
-DefaultAccount.sol:225:        assert(msg.sender != BOOTLOADER_FORMAL_ADDRESS);  
-```
-
-As the Solidity version is > 0.8.* the remaining gas would still be refunded in case of failure.
-
-Notice that, on the opposite side, [the following use](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/RLPEncoder.sol#L45) of `assert` is totally justified:
-
-```solidity
-contracts/libraries/RLPEncoder.sol
-44:     function encodeNonSingleBytesLen(uint64 _len) internal pure returns (bytes memory) {
-45:         assert(_len != 1);
-46:         return _encodeLength(_len, 0x80);
-47:     }
-```
-
-This is due to the fact that, in all of the codebase, each call to `RLPEncoder.encodeNonSingleBytesLen()` is already made under the condition that the input is `!= 1`, making this `assert` an effective "invariant check":
-
-```solidity
-contracts/BootloaderUtilities.sol:
-   68              if (txDataLen != 1) {
-   69                  // If the length is not equal to one, then only using the length can it be encoded definitely.
-   70:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
-
-  164              if (txDataLen != 1) {
-  165                  // If the length is not equal to one, then only using the length can it be encoded definitely.
-  166:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
-
-  259              if (txDataLen != 1) {
-  260                  // If the length is not equal to one, then only using the length can it be encoded definitely.
-  261:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
-
-contracts/libraries/TransactionHelper.sol:
-  171              if (txDataLen != 1) {
-  172                  // If the length is not equal to one, then only using the length can it be encoded definitely.
-  173:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
-
-  249              if (txDataLen != 1) {
-  250                  // If the length is not equal to one, then only using the length can it be encoded definitely.
-  251:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
-
-  321              if (txDataLen != 1) {
-  322                  // If the length is not equal to one, then only using the length can it be encoded definitely.
-  323:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
-```
-
-As an additional note: this repeated sentence could be rephrased as it's not easy to understand/feels grammatically incorrect: `If the length is not equal to one, then only using the length can it be encoded definitely`.
-
-## 1.7. Lack of a `L2EthToken.burn` method only callable by the Bootloader
-
-While there exist a [L2EthToken.withdraw](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L80-L94) method that silently burns tokens, it's quite possible to `mint` more token that could ever be `withdraw`n due to the [presence of `msg.value`](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L81). While this would be self-sabotage or a mistake in the Bootloader, it still means that burning tokens is a lot more difficult than minting it. Consider adding a `L2EthToken.burn` method only callable by the Bootloader
-
-## 1.8. Create an `onlyDeployerSystemContract` modifier and avoid a missing a friendly revert string
+*Category: Issues with comments*
 
 This `require` statement is copy-pasted many times and is even [missing a revert string](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol#L135) in one of the copy-pastes. Consider creating a `modifier` that can be imported and used just like [onlySystemCall](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/SystemContractHelper.sol#L334-L346) for the following:
 
@@ -203,7 +166,9 @@ contracts/NonceHolder.sol:
   135:         require(msg.sender == address(DEPLOYER_SYSTEM_CONTRACT), "");
 ```
 
-## 1.9. `modifier onlyBootloader` is declared at 3 places and is missing a friendly revert string at one
+## 1.8. `modifier onlyBootloader` is declared at 3 places and is missing a friendly revert string at one
+
+*Category: Issues with comments*
 
 The `modifier onlyBootloader` is copy-pasted many times and is even [missing a revert string](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L16) in one of the copy-pastes. Consider doing just like [onlySystemCall](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/SystemContractHelper.sol#L334-L346) for the following:
 
@@ -227,7 +192,9 @@ contracts/SystemContext.sol:
   18      }
 ```
 
-## 1.10. (OOS) Discouraged use of `safeApprove`
+## 1.9. (OOS) Discouraged use of `safeApprove`. Use `safeIncreaseAllowance` here instead
+
+*Category: Use of a deprecated function*
 
 *This finding is out of scope due to [4naly3er](https://gist.github.com/Picodes/4fda93fac0db99cf9f2e260a073b38e4#l-2-do-not-use-deprecated-library-functions), therefore only some additional information are being provided here*
 
@@ -367,6 +334,13 @@ Additionally, the input validation is also already made in the project's [Ecreco
 61:             let vIsInvalid := iszero(or(eq(v, 27), eq(v, 28)))
 ```
 
+Therefore, the check can be deleted [here](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L176):
+
+```solidity
+File: DefaultAccount.sol
+176:         require(v == 27 || v == 28, "v is neither 27 nor 28");
+```
+
 ## 2.3. Tautology when checking `recoveredAddress`
 
 While taking into account the `address(0)` output of `ecrecover` is something that must always be done: in this particular case the check is a [tautology](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L191):
@@ -431,17 +405,57 @@ File: SystemContractHelper.sol
 
 As the `@audit-issue` tag says, `heapSize` and `auxHeapSize` are missing and this is probably due to the fact that [the fields are not tightly packed](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/README.md?plain=1#L148). However, it is still not 100% clear why returning 0 for `heapSize` and `auxHeapSize` would be expected. Consider adding some comments/documentation.
 
-## 2.6. Consider only declaring 1 contract, or 1 library, or 1 interface, or 1 abstract contract in a file
+## 2.6. `require()` should be used for checking error conditions on inputs and return values while `assert()` should be used for invariant checking
 
-`SystemContractHelper.sol` is the only file where there are 2 declarations:
+Properly functioning code should **never** reach a failing assert statement, unless there is a bug in your contract you should fix. [Here](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/DefaultAccount.sol#L225), I believe the `assert` should be a `require` statement, as it's checking what a specific user is doing:
 
 ```solidity
-41: library SystemContractHelper {
-...
-336: abstract contract ISystemContract {
+DefaultAccount.sol:225:        assert(msg.sender != BOOTLOADER_FORMAL_ADDRESS);  
 ```
 
-Consider moving `ISystemContract` to its own file.
+As the Solidity version is > 0.8.* the remaining gas would still be refunded in case of failure.
+
+Notice that, on the opposite side, [the following use](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/RLPEncoder.sol#L45) of `assert` is totally justified:
+
+```solidity
+contracts/libraries/RLPEncoder.sol
+44:     function encodeNonSingleBytesLen(uint64 _len) internal pure returns (bytes memory) {
+45:         assert(_len != 1);
+46:         return _encodeLength(_len, 0x80);
+47:     }
+```
+
+This is due to the fact that, in all of the codebase, each call to `RLPEncoder.encodeNonSingleBytesLen()` is already made under the condition that the input is `!= 1`, making this `assert` an effective "invariant check":
+
+```solidity
+contracts/BootloaderUtilities.sol:
+   68              if (txDataLen != 1) {
+   69                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+   70:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+
+  164              if (txDataLen != 1) {
+  165                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+  166:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+
+  259              if (txDataLen != 1) {
+  260                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+  261:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+
+contracts/libraries/TransactionHelper.sol:
+  171              if (txDataLen != 1) {
+  172                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+  173:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+
+  249              if (txDataLen != 1) {
+  250                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+  251:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+
+  321              if (txDataLen != 1) {
+  322                  // If the length is not equal to one, then only using the length can it be encoded definitely.
+  323:                 encodedDataLength = RLPEncoder.encodeNonSingleBytesLen(txDataLen);
+```
+
+As an additional note: this repeated sentence could be rephrased as it's not easy to understand/feels grammatically incorrect: `If the length is not equal to one, then only using the length can it be encoded definitely`.
 
 ## 2.7. Typos
 
@@ -462,7 +476,19 @@ Consider moving `ISystemContract` to its own file.
 + SystemContext.sol:106:    /// @dev While _expectedNewNumber can be derived as prevBlockNumber + 1, we still
 ```
 
-## 2.8. Default Visibility
+## 2.8. Consider only declaring 1 contract, or 1 library, or 1 interface, or 1 abstract contract in a file
+
+`SystemContractHelper.sol` is the only file where there are 2 declarations:
+
+```solidity
+41: library SystemContractHelper {
+...
+336: abstract contract ISystemContract {
+```
+
+Consider moving `ISystemContract` to its own file.
+
+## 2.9. Default Visibility
 
 The following constants are using the default visibility:
 
@@ -477,7 +503,7 @@ SystemContext.sol:48:    uint256 constant BLOCK_INFO_BLOCK_NUMBER_PART = 2 ** 12
 
 For readability, consider explicitly declaring them as `internal`.
 
-## 2.9. Adding a `return` statement when the function defines a named return variable, is redundant
+## 2.10. Adding a `return` statement when the function defines a named return variable, is redundant
 
 While **not** consuming more gas: using both named returns and a return statement isn't necessary. Removing one of those can improve code clarity.
 
@@ -497,13 +523,13 @@ contracts/NonceHolder.sol:
   129      }
 ```
 
-## 2.10. `2500000000000000` should be changed to `2.5e15` for readability reasons
+## 2.11. `2500000000000000` should be changed to `2.5e15` for readability reasons
 
 ```solidity
 SystemContext.sol:40:    uint256 public difficulty = 2500000000000000;  
 ```
 
-## 2.11. Use `string.concat()` or `bytes.concat()` along with a more recent version of Solidity
+## 2.12. Use `string.concat()` or `bytes.concat()` along with a more recent version of Solidity
 
 Solidity version 0.8.4 introduces `bytes.concat()` (vs `abi.encodePacked(<bytes>,<bytes>)`)
 Solidity version 0.8.12 introduces `string.concat()` (vs `abi.encodePacked(<str>,<str>)`)
@@ -514,7 +540,7 @@ libraries/TransactionHelper.sol:141:        return keccak256(abi.encodePacked("\
 L2EthToken.sol:98:        return abi.encodePacked(IMailbox.finalizeEthWithdrawal.selector, _to, _amount);
 ```
 
-## 2.12. Import declarations should import specific identifiers, rather than the whole file
+## 2.13. Import declarations should import specific identifiers, rather than the whole file
 
 Using import declarations of the form `import {<identifier_name>} from "some/file.sol"` avoids polluting the symbol namespace making flattened files smaller, and speeds up compilation
 
