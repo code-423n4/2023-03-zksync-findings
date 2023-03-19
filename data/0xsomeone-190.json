@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "0xsomeone",
+  "risk": "3",
+  "title": "EVM Elliptic Curve Recovery Discrepancy",
+  "issueId": 190,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/190"
+}
