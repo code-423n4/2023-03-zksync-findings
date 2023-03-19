@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "prapandey031",
+  "risk": "3",
+  "title": "The \"totalRequiredBalance()\" function in the TransactionHelper.sol library can compute address(uint160(_transaction.paymaster) as zero address even when _transaction.paymaster is non-zero",
+  "issueId": 208,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/208"
+}
