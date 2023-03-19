@@ -10,7 +10,7 @@ Pointer and memory management:
 Ensure proper initialization and null value checks, use pointer arithmetic cautiously, validate user input, and allocate and release memory properly. Additionally, consider using a memory-safe language or library to avoid these types of vulnerabilities altogether.
 
 Reentrancy attacks:
-To prevent reentrancy attacks, consider moving the ether transfer to the end of the function, after all internal state updates have been made. Alternatively, use the Checks-Effects-Interactions pattern to ensure that all state changes are made before any external interactions.
+To prevent reentrancy attacks, consider moving the ether transfer to the end of the ensurePayment function, after all internal state updates have been made. Alternatively, use the Checks-Effects-Interactions pattern to ensure that all state changes are made before any external interactions.
 
 Insufficient validation:
 To prevent financial losses due to insufficient validation, perform adequate checks to validate all user input, including the gasPerPubdata and userProvidedPubdataPrice parameters. Ensure that all input values are properly validated and formatted before being used in calculations or updates.
