@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "jasonxiale",
+  "risk": "2",
+  "title": "DefaultAccount._validateTransaction cast uint256 to uint32",
+  "issueId": 121,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/121"
+}
