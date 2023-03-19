@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "prapandey031",
+  "risk": "3",
+  "title": "No check for checking the \"to\" address to not be zero address in _execute() function of DefaultAccount.sol",
+  "issueId": 216,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/216"
+}
