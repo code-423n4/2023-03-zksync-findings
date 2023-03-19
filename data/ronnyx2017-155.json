@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "ronnyx2017",
+  "risk": "2",
+  "title": "NonceHolder.setValueUnderNonce does not check if the nonce has been used before",
+  "issueId": 155,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/155"
+}
