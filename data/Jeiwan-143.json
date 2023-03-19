@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "Jeiwan",
+  "risk": "3",
+  "title": "[bootloader] A bytecode hash without the bytecode (preimage) can be marked as known, breaking the prover",
+  "issueId": 143,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/143"
+}
