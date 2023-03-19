@@ -6,10 +6,114 @@
 
 | |Issue|Instances|
 |-|:-|:-:|
-| [L-1](#L-1) |  Use `require` instead of `assert` | 2 |
+| [L-1](#L-1) |  Silent failure of `MsgValueSimulator.fallback()` can lead to loss of `ETH` in edge case | 1 |
+| [L-2](#L-2) |  Use `require` instead of `assert` | 2 |
+
+### Silent failure of `MsgValueSimulator.fallback()` can lead to loss of `ETH` in edge case
+
+`MsgValueSimulator` allows the zkEVM to simulate the `msg.value` behavior.
+
+This is handled in `fallback()`: if there is a non-zero value, a call is made to the `L2EthToken` contract to update the `balanceOf` the caller and the callee, then sets the value for the next call using `setValueForNextFarCall`.
+
+```solidity
+File: MsgValueSimulator.sol
+35: if (value != 0) {
+36:             (bool success, ) = address(ETH_TOKEN_SYSTEM_CONTRACT).call(
+37:                 abi.encodeCall(ETH_TOKEN_SYSTEM_CONTRACT.transferFromTo, (msg.sender, to, value))
+38:             );
+```
+
+```solidity
+File: MsgValueSimulator.sol
+60: SystemContractHelper.setValueForNextFarCall(uint128(value));
+```
+
+Before making the `setValueForNextFarCall` call, the function checks `value > MAX_MSG_VALUE`, to ensure the value does not exceed the limit the context can have.
+
+```solidity
+File: MsgValueSimulator.sol
+48:         if (value > MAX_MSG_VALUE) {
+49:             // The if above should never be true, since noone should be able to have
+50:             // MAX_MSG_VALUE wei of ether. However, if it does happen for some reason,
+51:             // we will revert(0,0).
+52:             // Note, that we use raw revert here instead of `panic` to emulate behaviour close to
+53:             // the EVM's one, i.e. returndata should be empty.
+54:             assembly {
+55:                 return(0, 0)//@audit - should revert
+56:             }
+57:         }
+```
+
+The issue is that while the code should actually reverts when reaching this block, it actually returns, meaning the call would silently fail.
 
 
-### L-1  Use `require` instead of `assert`
+#### Impact
+
+In theory in such case, while the balance of the caller and the callee have been updated, the `msg.value` for the call has not been set, meaning that it can potentially be a loss for the caller (depending on the call, examples given below).
+
+
+#### Probability
+
+`type(uint128).max ~3e38`, ie `~3e20 ETH`.
+Given that the current supply of `ETH` is ~`120e6 ETH` , and that the current issuance rate is approximately `4.5%` (ie `5.25e6 ETH/ year`), this means it is not possible to have `msg.value > 1e128` (except in a very far future).
+
+Now in the scenario where a call with `msg.value > type(uint128).max` happens:
+
+#### Case 1: an EOA sending a transaction with `msg.value > type(uint128).max`
+
+```
+-> DefaultAccount._execute()
+    -> EfficientCall.rawCall(gas, to, value, data)
+        -> call(msgValueSimulator, callAddr, _value, _address, 0xFFFF, forwardMask, 0)
+            -> MsgValueSimulator.fallback()
+```
+
+Because `_execute()` checks that `_transaction.value <= type(uint128).max`, the problematic code block mentioned above cannot actually be reached. -> no issue
+
+#### Case 2: a smart contract making a call with `msg.value > type(uint128).max` to another smart contract
+
+There is no check in the system on `msg.value`, so the call would go through, but without the `setValueForNextFarCall` call.
+It would then depend on the receiving smart contract to perform checks on `msg.value`.
+
+If there is no check, the caller essentially lost their `ETH`.
+
+For instance a simple vault deposit call:
+
+```solidity
+
+vault.deposit{value: contractBalance}();
+```
+
+where `contractBalance > type(uint128).max`
+
+```solidity
+deposit() external payable {
+    balances[msg.sender] += msg.value;
+}
+```
+
+In such case, while the vault `ETH` balance will have been updated in `L2EthToken`, the `msg.value` passed is zero (because of the return [here](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/MsgValueSimulator.sol#L48-L56)): the `balances` mapping of the calling smart contract is not updated, meaning they have lost `contractBalance`.
+
+This issue is very unlikely to arise as stated above, but ensure the following code reverts:
+
+```diff
+File: MsgValueSimulator.sol
+48: if (value > MAX_MSG_VALUE) {
+49:             // The if above should never be true, since noone should be able to have
+50:             // MAX_MSG_VALUE wei of ether. However, if it does happen for some reason,
+51:             // we will revert(0,0).
+52:             // Note, that we use raw revert here instead of `panic` to emulate behaviour close to
+53:             // the EVM's one, i.e. returndata should be empty.
+54:             assembly {
+-55:                 return(0, 0)
++55:                 revert(0, 0)
+56:             }
+57:         }
+```
+
+
+
+### L-2  Use `require` instead of `assert`
   As per Solidity’s [documentation](https://docs.soliditylang.org/en/v0.8.17/control-structures.html?highlight=assert#panic-via-assert-and-error-via-require):
  "The assert function creates an error of type Panic(uint256). The same error is created by the compiler in certain situations as listed below. 
 Assert should only be used to test for internal errors, and to check invariants. Properly functioning code should never create a Panic, not even on invalid external input. If this happens, then there is a bug in your contract which you should fix"
