@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "gogo",
+  "risk": "3",
+  "title": "executeTransactionFromOutside incorrectly validates the passed _transaction",
+  "issueId": 185,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/185"
+}
