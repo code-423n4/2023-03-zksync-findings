@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "unforgiven",
+  "risk": "3",
+  "title": "deploying contracts with forceDeployOnAddress will break contracts when callConstructor is false",
+  "issueId": 167,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/167"
+}
