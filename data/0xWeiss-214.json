@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "0xWeiss",
+  "risk": "3",
+  "title": "Wrong Implementation of EIP-712",
+  "issueId": 214,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/214"
+}
