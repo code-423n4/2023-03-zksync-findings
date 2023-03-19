@@ -79,6 +79,14 @@ require(precompileCallSuccess);
 
 It is recommended to add an error message in this case too, for ease of finding the root cause in case of failure. 
 
+Similarly, the same could be applied to the following require within `SystemContractHelper.precompileCall`:
+
+[Link to code](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/SystemContractHelper.sol#L152)
+
+```js
+require(gasleft() >= _gasToBurn);
+```
+
 ## [04]  Usage of magic numbers in UnsafeBytesCalldata
 
 The library `UnsafeBytesCalldata` currently uses magic numbers that are correct, but seem odd at first glance:
