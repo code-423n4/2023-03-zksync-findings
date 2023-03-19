@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "IceBear",
+  "risk": "2",
+  "title": "Address.sendValue() might fail silently",
+  "issueId": 122,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/122"
+}
