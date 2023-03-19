@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "unforgiven",
+  "risk": "2",
+  "title": "Function getImmutable() should revert for non-existing immutable for an address instead of returning 0",
+  "issueId": 192,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/192"
+}
