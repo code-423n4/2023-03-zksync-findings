@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "supernova",
+  "risk": "2",
+  "title": "Governor can alter any contract's bytecode (Outside of system contracts)",
+  "issueId": 133,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/133"
+}
