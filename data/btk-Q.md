@@ -10,6 +10,8 @@
 | [L-05] | Constants in comparisons should appear on the left side                                                  | 9             |
 | [L-06] | Signature Malleability of EVM's `ecrecover()`                                                            | 1             |
 | [L-07] | Use `immutable` instead of `constant` for values such as a call to `keccak256()`                         | 2             |
+| [L-08] | The #BytecodeCompressor._decodeRawBytecode() function cannot be compiled due to an error                 | 1             |
+| [L-09] | Wrong DOMAIN_SEPARATOR                                                                                   | 1             |
   
 | Total Non-Critical issues |
 |---------------------------|
@@ -646,6 +648,49 @@ While it doesn't save any gas because the compiler knows that developers often m
 #### Recommended Mitigation Steps
 
 Use `immutable` instead of `constants` 
+
+## [L-08] The #BytecodeCompressor._decodeRawBytecode() function has an error
+
+#### Description
+
+There is an error in the function [`_decodeRawBytecode()`](https://github.com/code-423n4/2023-03-zksync//blob/main/contracts/BytecodeCompressor.sol#L82) has and extra colon at the end which will cause the compiler to issue warnings.
+
+#### Lines of code 
+
+```solidity
+            encodedData = _rawCompressedData[2 + dictionaryLen * 8:];
+```
+
+- [BytecodeCompressor.sol#L82](https://github.com/code-423n4/2023-03-zksync//blob/main/contracts/BytecodeCompressor.sol#L82)
+
+#### Recommended Mitigation Steps
+
+```solidity
+            encodedData = _rawCompressedData[2 + dictionaryLen * 8];
+```
+
+## [L-09] Wrong DOMAIN_SEPARATOR
+
+#### Description
+
+The protocol is using EIP-712 to protect his users from replay and frontrunning attacks, but as we can see on this line:
+
+```solidity
+    bytes32 constant EIP712_DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId)");
+```
+The domaine seperator is missing two parameters (verifyingContract, salt) which will make it more vulnerable to the attacks mentioned above and may lead to unexpected behavior.
+
+#### Lines of code 
+
+```solidity
+    bytes32 constant EIP712_DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId)");
+```
+
+- [TransactionHelper.sol#L81](https://github.com/code-423n4/2023-03-zksync//blob/main/contracts/libraries/TransactionHelper.sol#L81)
+
+#### Recommended Mitigation Steps
+
+Follow the [EIP-712](https://eips.ethereum.org/EIPS/eip-712#definition-of-domainseparator) to make the protocol more robust.
 
 ## [NC-01] Include return parameters in NatSpec comments
 
