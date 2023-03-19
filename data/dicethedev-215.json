@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "dicethedev",
+  "risk": "2",
+  "title": " Here are some potential security vulnerabilities that I have identified in this particular contract (BytecodeCompressor.sol)",
+  "issueId": 215,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/215"
+}
