@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "sces60107",
+  "risk": "2",
+  "title": "When using `BytecodeCompressor.publishCompressedBytecode()` to publish compressed bytecode. The L2->L1 log records the wrong sender.",
+  "issueId": 191,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/191"
+}
