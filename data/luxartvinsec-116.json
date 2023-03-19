@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "luxartvinsec",
+  "risk": "2",
+  "title": "Use safeTransfer()/ safeTransferFrom() instead of transfer()/ transferFrom()",
+  "issueId": 116,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/116"
+}
