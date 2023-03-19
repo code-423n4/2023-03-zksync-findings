@@ -1,0 +1,12 @@
+# Quality Assurance
+
+## Sending data to L1 incurs hidden fee via gas
+When sending a [message](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L1Messenger.sol#L22-L39) or [bytecode](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/KnownCodesStorage.sol#L90-L97) to L1, a gas fee of [17 gas](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/bootloader/bootloader.yul#L149-L151) is accounted for each byte (16 for byte + 1 for overhead).  
+However, [a byte of calldata costs either 4 gas (if it is zero) or 16 gas (if it is any other value)](https://ethereum.org/en/developers/tutorials/short-abi/) and there will be *zero* bytes in messages and bytcodes, therefore the computed value of `gasToPay` (see [sendToL1()](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L1Messenger.sol#L22-L39) and [_sendBytecodeToL1()](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/KnownCodesStorage.sol#L90-L97)) is higher than necessary and therefore incurs a hidden fee from the user.  
+I agree, that determining the amount of *zero* bytes in the data might also be uneconomical in terms of gas consumption.  
+Therefore, I suggest to make it clearer for the user that the same price is paid even for *zero* bytes in order to create awareness and mitigate the "hidden fee" character of the gas fee.
+
+## Test that critical methods of 'SystemContractHelper' don't work for user contracts
+Having access to [toL1()](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/SystemContractHelper.sol#L48-L57) from non-kernel space contracts allows user contracts to send arbitrary messages to L1 and therfore withdraw funds on L1 at will. Moreover, having access to [setValueForNextFarCall()](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/SystemContractHelper.sol#L164-L172) from non-kernel space contracts allows user contracts to transfer value on L2 without actually transferring any L2 ETH.  
+However, I failed to see within the assests in scope where it is enforced that the above methods can only be called by kernel space contracts.  
+Furhermore, I suggest to add test cases that try to use the above methods in user contracts and require them to fail.
