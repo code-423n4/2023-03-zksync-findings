@@ -264,3 +264,59 @@ Manual Analysis
 
 Consider importing OZ first, then all interfaces, then all utils.
 
+# 9: MOVE REQUIRE/VALIDATION STATEMENTS TO THE TOP OF THE FUNCTION WHEN VALIDATING INPUT PARAMETERS
+
+Vulnerability details
+
+## Context:
+
+Move require/validation statements to the top of the function when validating input parameters.
+
+## Proof of Concept
+
+> ***File: L1Messenger.sol*** 
+
+https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L1Messenger.sol#L47
+
+https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L1Messenger.sol#L23
+
+
+## Tools Used
+
+Manual Analysis
+
+### Recommended Mitigation Steps
+
+Consider moving the validation on L47 above the conditional on L23 for sendToL1().
+
+#### The below-listed contracts have the same issue.
+
+> ***contracts/L2EthToken.sol*** 
+
+> ***contracts/BytecodeCompressor.sol*** 
+
+> ***contracts/AccountCodeStorage.sol*** 
+
+> ***contracts/SystemContext.sol*** 
+
+> ***contracts/KnownCodesStorage.sol*** 
+
+> ***contracts/NonceHolder.sol*** 
+
+> ***contracts/DefaultAccount.sol*** 
+
+> ***contracts/ContractDeployer.sol*** 
+
+> ***contracts/BootloaderUtilities.sol*** 
+
+> ***libraries/SystemContractHelper.sol*** 
+
+> ***libraries/Utils.sol*** 
+
+> ***utils/SafeERC20.sol*** 
+
+> ***libraries/EfficientCall.sol*** 
+
+> ***utils/Address.sol*** 
+
+> ***libraries/TransactionHelper.sol*** 
