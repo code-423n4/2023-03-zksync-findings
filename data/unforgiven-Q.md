@@ -87,3 +87,12 @@ for example for address `2^161 + Address1` the function would return balance of 
 ```
 https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L64-L66
 
+
+
+**[[9]]** Function TransactionHelper.isEthToken() should convert the input to the address and compare it to the ETH_TOKEN_SYSTEM_CONTRACT, in current implementation value `2^161 + ETH_TOKEN_SYSTEM_CONTRACT` would be not considered as ethToken but when it is converted to the uint160 and address it would be as ETH_TOKEN_SYSTEM_CONTRACT. any logic depending on this function's return value can be vulnerable as it would be possible to supply uint256(Input1) that bypass `!isEthToken(Input1)` check but in fact the uint160(input1) is ETH token.
+```solidity
+    function isEthToken(uint256 _addr) internal pure returns (bool) {
+        return _addr == uint256(uint160(address(ETH_TOKEN_SYSTEM_CONTRACT))) || _addr == 0;
+    }
+```
+https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/TransactionHelper.sol#L93-L95
