@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "vagrant",
+  "risk": "2",
+  "title": "No revert when value > MAX_MSG_VALUE",
+  "issueId": 173,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/173"
+}
