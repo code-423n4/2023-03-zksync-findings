@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "0xWeiss",
+  "risk": "3",
+  "title": "Underflow if enough amount is sent to the contract",
+  "issueId": 210,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/210"
+}
