@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "unforgiven",
+  "risk": "3",
+  "title": "Function forceDeployOnAddress() will break the upgraded contract by resetting AccountInfo values to default",
+  "issueId": 174,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/174"
+}
