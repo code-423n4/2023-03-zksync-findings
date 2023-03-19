@@ -102,3 +102,13 @@ function readUint64(bytes calldata _bytes, uint256 _start) internal pure returns
 ```
 
 Because their usage is unique, it is not necessary to extract constants, but it should be considered to add comments explaining why these are correct.
+
+## [05] Incomplete function doc-string
+
+The doc-string of function `ContractDeployer._storeConstructingByteCodeHashOnAddress` misses part of its explanation:
+
+[Link to code](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/ContractDeployer.sol#L299)
+
+```js
+/// @notice Ensures that the _newAddress [?] and assigns a new contract hash to it
+```
