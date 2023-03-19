@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "jasonxiale",
+  "risk": "3",
+  "title": "L2EthToken.withdraw can be underflow with little cost",
+  "issueId": 124,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/124"
+}
