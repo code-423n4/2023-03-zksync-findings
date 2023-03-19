@@ -230,27 +230,7 @@ FILE: 2023-03-zksync/contracts/SystemContext.sol
 
 ##
 
-### [L-6] _account can be address(0)
-
-Can possible to mint wrongly to zero address 
-
-FILE : 2023-03-zksync/contracts/L2EthToken.sol
-
-   function mint(address _account, uint256 _amount) external override onlyBootloader {
-        totalSupply += _amount;
-        balance[_account] += _amount;
-        emit Mint(_account, _amount);
-    }
-
-[L2EthToken.sol#L72-L76](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L72-L76)
-
-Recommended Mitigation:
-
-Add address(0) require check before mint amount to _account address 
-
-##
-
-### [L-7] Use require instead of assert
+### [L-6] Use require instead of assert
 
 Description
 Assert should not be used except for tests, require should be used.
@@ -272,7 +252,7 @@ FILE : 2023-03-zksync/contracts/DefaultAccount.sol
 
 ##
 
-### [L-8] The _immutables array length not checked with > 0 . As per current implementation contract will call setImmutables() function with empty array.
+### [L-7] The _immutables array length not checked with > 0 . As per current implementation contract will call setImmutables() function with empty array.
 
 If call setImmutables() with empty array this function not throughs any error 
 
@@ -290,7 +270,7 @@ require(_immutables.length>0, "Empty array");
 
 ##
 
-### [L-9] Converting address to uint256 may cause unexpected behavior
+### [L-8] Converting address to uint256 may cause unexpected behavior
 
 Main drawback of converting an address to a uint256 using the expression uint256(uint160(_address)) is that the resulting uint256 value will contain 12 additional zero bytes in the higher-order bits. These extra zeros will not change the actual address value, but they may cause unexpected behavior if the resulting uint256 value is used in a comparison or other operation that expects only the address value.
 
@@ -304,7 +284,7 @@ FILE : 2023-03-zksync/contracts/ImmutableSimulator.sol
 
 ##
 
-### [L-10] The deprecated keccak function used 
+### [L-9] The deprecated keccak function used 
 
  It has been deprecated and replaced by keccak256 due to concerns about interoperability and confusion with other SHA-3 implementations
 
@@ -320,7 +300,7 @@ Recommended Mitigation:
 
 ##
 
-### [L-11] The possibility of an underflow of balance[address(this)] and totalSupply exists if the msg.sender requests a withdrawal amount greater than the balances of totalSupply and balance[address(this)]
+### [L-10] The possibility of an underflow of balance[address(this)] and totalSupply exists if the msg.sender requests a withdrawal amount greater than the balances of totalSupply and balance[address(this)]
 
 FILE : 2023-03-zksync/contracts/L2EthToken.sol
 
@@ -332,7 +312,7 @@ The withdrawal amount must be less than the balance of balance[address(this)] an
 
 ##
 
-### [L-12] LACK OF CHECKS ADDRESS(0)
+### [L-11] LACK OF CHECKS ADDRESS(0)
 
 _address not checked with ADDRESS(0). Its possible to store addressAsKey value to ADDRESS(0)
 
@@ -350,12 +330,46 @@ FILE : 2023-03-zksync/contracts/AccountCodeStorage.sol
 
 [AccountCodeStorage.sol#L34-L42](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/AccountCodeStorage.sol#L34-L42)
 
+FILE : 2023-03-zksync/contracts/L2EthToken.sol
+
+Possible to mint token with zero address since lack of address(0) checks 
+
+   function mint(address _account, uint256 _amount) external override onlyBootloader {
+        totalSupply += _amount;
+        balance[_account] += _amount;
+        emit Mint(_account, _amount);
+    }
+
+[L2EthToken.sol#L72-L76](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L72-L76)
+
+
+FILE : 2023-03-zksync/contracts/SystemContext.sol
+
+     function setTxOrigin(address _newOrigin) external onlyBootloader {
+        origin = _newOrigin;
+    }
+
+[SystemContext.sol#L60-L62](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L60-L62)
+
 Recemented mitigation:
 
-  require(_address != address(0),"Zero Address");
+  require(anyAddress != address(0),"Zero Address");
+
+##
+
+### [L-12] LOW LEVEL CALLS WITH SOLIDITY VERSION 0.8.14 CAN RESULT IN OPTIMISER BUG
+
+The project contracts in scope are using low level calls with solidity version before 0.8.14 which can result in optimizer bug.
+
+(https://medium.com/certora/overly-optimistic-optimizer-certora-bug-disclosure-2101e3f7994d)
+
+Simliar findings in Code4rena contests for reference:
+(https://code4rena.com/reports/2022-06-illuminate/#5-low-level-calls-with-solidity-version-0814-can-result-in-optimiser-bug)
+
+Recommended Mitigation Steps
+Consider upgrading to at least solidity v0.8.15.
 
 
-  
 
 # NON CRITICAL FINDINGS 
 
@@ -789,7 +803,7 @@ Recommended Mitigation:
 
 ##
 
-### [NC-15] The NATSPEC @notice function definition is inappropriate
+### [NC-15] Wrong function comment on setGasPrice()
 
 FILE : 2023-03-zksync/contracts/SystemContext.sol
 
@@ -809,6 +823,9 @@ Recommended Mitigation:
 ##
 
 ### [NC-16] Function writing that does not comply with the Solidity Style Guide
+
+CONTEXT
+ALL CONTRACTS
 
 Description
 Order of Functions; ordering helps readers identify which functions they can call and to find the constructor and fallback definitions easier. But there are contracts in the project that do not comply with this.
@@ -841,6 +858,8 @@ Move external functions above the internal function
 
 ### [NC-17] For functions, follow Solidity standard naming conventions (internal function style rule)
 
+Internal and private functions always start with _
+
 FILE : 2023-03-zksync/contracts/BootloaderUtilities.sol
 
    43: function encodeLegacyTransactionHash(Transaction calldata _transaction) internal view returns (bytes32 
@@ -855,6 +874,18 @@ FILE : 2023-03-zksync/contracts/BootloaderUtilities.sol
    228: function encodeEIP1559TransactionHash(Transaction calldata _transaction) internal view returns (bytes32) {
 
 [BootloaderUtilities.sol#L228](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BootloaderUtilities.sol#L228)
+
+[EfficientCall.sol#L35](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/EfficientCall.sol#L35)
+
+[EfficientCall.sol#L44](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/EfficientCall.sol#L44)
+
+[EfficientCall.sol#L56-L61](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/EfficientCall.sol#L56-L61)
+
+[EfficientCall.sol#L71-L75](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/EfficientCall.sol#L71-L75)
+
+[EfficientCall.sol#L85-L89](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/EfficientCall.sol#L85-L89)
+
+[EfficientCall.sol#L102-L109](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/libraries/EfficientCall.sol#L102-L109)
 
 ##
 
@@ -880,29 +911,176 @@ NatSpec comments should be increased in contracts.
 
 [SystemContext.sol#L40](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L40)
 
+##
 
-Add an event for critical parameter changes
+### [NC-20] ADD A TIMELOCK TO CRITICAL FUNCTIONS
 
-Missing unit tests
-Use time units directly
-Declare interfaces on separate files
-Add a limit for the maximum number of characters per line
-Lack of spacing in comment
-Critical changes should use two-step procedure
-Missing NATSPEC
-Interchangeable usage of uint and uint256
-Move require/validation statements to the top of the function when validating input parameters
-Constant redefined elsewhere
-Convert repeated validation statements into a function modifier to improve code reusability
-Prevent division by 0
-Use of EIP 4337, which is likely to change, not recommended for general use or application
-Front running attacks by the onlyOwner
-Unused function parameter and local variable
-Initial value check is missing in Set Functions
-Add a timelock to critical functions
-Test environment comments and codes should not be in the main version
-Use of bytes.concat() instead of abi.encodePacked()
-Use underscores for number literals
+It is a good practice to give time for users to react and adjust to critical changes. A timelock provides more guarantees and reduces the level of trust required, thus decreasing risk for users. It also indicates that the project is legitimate (less risk of a malicious owner making a sandwich attack on a user).
+
+FILE : 2023-03-zksync/contracts/SystemContext.sol
+
+   function setTxOrigin(address _newOrigin) external onlyBootloader {
+        origin = _newOrigin;
+    }
+
+[SystemContext.sol#L60-L62](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L60-L62)
+
+##
+
+### [NC-21] NO SAME VALUE INPUT CONTROL
+
+FILE : 2023-03-zksync/contracts/SystemContext.sol
+
+   function setTxOrigin(address _newOrigin) external onlyBootloader {
+        origin = _newOrigin;
+    }
+
+[SystemContext.sol#L60-L62](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L60-L62)
+
+##
+
+### [NC-22] Missing NatSpec
+
+FILE : 2023-03-zksync/contracts/L2EthToken.sol
+
+    modifier onlyBootloader() {
+        require(msg.sender == BOOTLOADER_FORMAL_ADDRESS, "Callable only by the bootloader");
+        _;
+    }
+
+[L2EthToken.sol#L28-L31](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/L2EthToken.sol#L28-L31)
+
+FILE : 2023-03-zksync/contracts/ContractDeployer.sol
+
+   modifier onlySelf() {
+        require(msg.sender == address(this), "Callable only by self");
+        _;
+    }
+
+[ContractDeployer.sol#L26-L29](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/ContractDeployer.sol#L26-L29)
+
+[NonceHolder.sol#L146-L149](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol#L146-L149)
+
+##
+
+### [NC-23] Omissions in Events
+
+FILE : 2023-03-zksync/contracts/SystemContext.sol
+
+   function setTxOrigin(address _newOrigin) external onlyBootloader {
+        origin = _newOrigin;
+    }
+
+[SystemContext.sol#L60-L62](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L60-L62)
+
+
+##
+
+### [NC-24] Tokens accidentally sent to the contract cannot be recovered
+
+It can’t be recovered if the tokens accidentally arrive at the contract address, which has happened to many popular projects, so I recommend adding a recovery code to your critical contracts.
+
+Recommended Mitigation Steps
+Add this code:
+
+ /**
+  * @notice Sends ERC20 tokens trapped in contract to external address
+  * @dev Onlyowner is allowed to make this function call
+  * @param account is the receiving address
+  * @param externalToken is the token being sent
+  * @param amount is the quantity being sent
+  * @return boolean value indicating whether the operation succeeded.
+  *
+ */
+  function rescueERC20(address account, address externalToken, uint256 amount) public onlyOwner returns (bool) {
+    IERC20(externalToken).transfer(account, amount);
+    return true;
+  }
+}
+
+##
+
+### [NC-25] Project Upgrade and Stop Scenario should be
+
+At the start of the project, the system may need to be stopped or upgraded, I suggest you have a script beforehand and add it to the documentation. This can also be called an ” EMERGENCY STOP (CIRCUIT BREAKER) PATTERN “.
+
+(https://github.com/maxwoe/solidity_patterns/blob/master/security/EmergencyStop.sol)
+
+##
+
+### [NC-26] Use scientific notation (e.g. 1e18) rather than exponentiation (e.g. 10**18)
+
+FILE : 2023-03-zksync/contracts/BytecodeCompressor.sol
+
+   43:  require(dictionary.length <= 2 ** 16 * 8, "Dictionary is too big");
+
+[BytecodeCompressor.sol#L43](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/BytecodeCompressor.sol#L43)
+
+FILE : 2023-03-zksync/contracts/NonceHolder.sol
+
+   27: uint256 constant DEPLOY_NONCE_MULTIPLIER = 2 ** 128;
+
+   30: uint256 constant MAXIMAL_MIN_NONCE_INCREMENT = 2 ** 32;
+
+[NonceHolder.sol#L27-L30](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol#L27-L30)
+
+FILE : 2023-03-zksync/contracts/SystemContext.sol
+
+   48:  uint256 constant BLOCK_INFO_BLOCK_NUMBER_PART = 2 ** 128;
+
+[SystemContext.sol#L48](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/SystemContext.sol#L48)
+
+## [NC-27] Use same SPDX Identifier for all contracts 
+
+Some contracts using MIT and some contracts using and MIT and Apache-2.0 
+
+FILE : 2023-03-zksync/contracts/BootloaderUtilities.sol
+
+   1: // SPDX-License-Identifier: MIT
+
+FILE : 2023-03-zksync/contracts/libraries/EfficientCall.sol
+
+   1: // SPDX-License-Identifier: MIT OR Apache-2.0
+
+##
+
+### [NC-28] Require checks should come first 
+
+FILE : 2023-03-zksync/contracts/NonceHolder.sol
+
+Require check should come first then accountInfo can be declared . This is the best code practice 
+
+    function setValueUnderNonce(uint256 _key, uint256 _value) public onlySystemCall {
+        IContractDeployer.AccountInfo memory accountInfo = DEPLOYER_SYSTEM_CONTRACT.getAccountInfo(msg.sender);
+
+        require(_value != 0, "Nonce value can not be set to 0");
+        // If an account has sequential nonce ordering, we enforce that the previous
+        // nonce has already been used.
+        if (accountInfo.nonceOrdering == IContractDeployer.AccountNonceOrdering.Sequential && _key != 0) {
+            require(isNonceUsed(msg.sender, _key - 1), "Previous nonce has not been used");
+        }
+
+[NonceHolder.sol#L81-L96](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/NonceHolder.sol#L81-L96)
+
+##
+
+### [NC-29] Use delete to clear variables instead of zero assignment
+
+You can use the delete keyword instead of setting the variable as zero
+
+FILE: 2023-03-zksync/contracts/ContractDeployer.sol
+
+   238: uint256 sumOfValues = 0;
+
+[ContractDeployer.sol#L238](https://github.com/code-423n4/2023-03-zksync/blob/21d9a364a4a75adfa6f1e038232d8c0f39858a64/contracts/ContractDeployer.sol#L238)
+
+   
+
+
+
+
+
+
 
 
 
@@ -912,17 +1090,7 @@ Use underscores for number literals
    
 
 
-NC-1	Missing checks for address(0) when assigning values to address state variables	1
-NC-2	require() / revert() statements should have descriptive reason strings	3
-NC-3	TODO Left in the code	1
-NC-4	Event is missing indexed fields	11
-NC-5	Functions not used internally could be marked external	7
 
-L-1	abi.encodePacked() should not be used with dynamic types when passing the result to a hash function such as keccak256()	2
-L-2	Do not use deprecated library functions	3
-L-3	Empty Function Body - Consider commenting why	2
-L-4	Initializers could be front-run	2
-L-5	Unspecific compiler version pragma	1
 
     
 
