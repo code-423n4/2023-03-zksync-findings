@@ -1,0 +1,8 @@
+{
+  "contest": 221,
+  "handle": "ronnyx2017",
+  "risk": "3",
+  "title": "DefaultAccount.executeTransactionFromOutside does not validate if the signature is valid for the sender",
+  "issueId": 154,
+  "issueUrl": "https://github.com/code-423n4/2023-03-zksync-findings/issues/154"
+}
